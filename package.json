@@ -11,6 +11,7 @@
   "dependencies": {
     "commander": "^3.0.2",
     "neo-blessed": "^0.2.0",
+    "opn": "^6.0.0",
     "parse-md": "^2.0.2",
     "recursive-readdir": "^2.2.2"
   }
