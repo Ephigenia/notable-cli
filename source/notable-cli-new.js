@@ -10,4 +10,9 @@ program
   .description('Create a new note')
   ;
 
-program.parse(process.argv);
+function main() {
+  console.error('Command is not completed yet');
+  process.exit(1);
+}
+
+program.action(main).parse(process.argv);

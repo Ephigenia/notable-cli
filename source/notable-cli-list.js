@@ -4,15 +4,19 @@
 const program = require('commander');
 const chalk = require('chalk');
 
-const data = require('./data');
+const data = require('./lib/data');
 const pkg = require('./../package.json');
 const config = require('./config');
+
+const { spawn } = require('child_process');
 
 program
   .version(pkg.version)
   .description('list/show/filter notes')
   .option('-f, --full', 'full output', false)
+  .option('-e, --editor', 'open editor with resulting filtered notes')
   .option('-o, --oneline', 'one-line output', false)
+  .option('-i, --interactive', 'interactive selection of file', false)
   .option('-s, --sort <criteria>', 'sorting', 'title')
   .option('--search <regexp>', 'searching')
   .option('-t, --tag <tag>', 'show notes having the given tag, case-sensitive', (val) => {
@@ -43,6 +47,17 @@ function main() {
         }
         return show;
       });
+
+      if (program.editor) {
+        if (shownNotes.length === 0) {
+          console.error('no files found that could be opened.');
+          process.exit(1);
+        }
+        const filenames = shownNotes.map(note => note.filename);
+        const editor = 'sublime';
+        spawn(editor, filenames);
+        process.exit(0);
+      }
 
       shownNotes.sort((a, b) => {
         switch(program.sort) {

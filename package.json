@@ -18,7 +18,7 @@
     "node": ">=10.15.3",
     "npm": ">=6.4.1"
   },
-  "main": "source/notes-cli.js",
+  "main": "source/notable-cli.js",
   "bin": {
     "notable-cli": "source/notable-cli.js"
   },
@@ -33,8 +33,6 @@
     "chalk": "^2.4.2",
     "commander": "^3.0.2",
     "eslint": "^6.5.1",
-    "neo-blessed": "^0.2.0",
-    "opn": "^6.0.0",
     "parse-md": "^2.0.2",
     "recursive-readdir": "^2.2.2"
   }
