@@ -81,7 +81,7 @@ function main() {
             note.metadata.title
           );
         } else if (program.full) {
-          console.log(note.content);
+          console.log([chalk.green(note.filename), note.content].join("\n"));
         } else {
           console.log(escape(note.filename));
         }
