@@ -53,6 +53,7 @@ const contentBox = blessed.Box({
 
 let selectedNote;
 let selectedTag = 'all';
+let allTags = [];
 
 function sortTags(tags) {
   return tags.sort((a, b) => String(a).localeCompare(String(b)));
@@ -81,10 +82,10 @@ function filterAndSortNotes(notes, filter, sort = true) {
 
 data.read(notablePath)
   .then(notes => {
-    let tags = new Set(['all']);
+    const tags = new Set(['all']);
     notes.forEach(note => note.metadata.tags.forEach(tags.add.bind(tags)));
-    tags = sortTags(Array.from(tags));
-    tagListBox.setItems(tags);
+    allTags = sortTags(Array.from(tags));
+    tagListBox.setItems(allTags);
 
     tagListBox.on('select', function(item, index) {
       selectedTag = item.content;
@@ -139,4 +140,64 @@ screen.key(['2'], function(ch, key) {
 });
 screen.key(['o'], function(ch, key) {
   if (selectedNote) opn(selectedNote.filename);
+});
+
+const tagList = blessed.list({
+  label: 'Tags For File',
+  width: '50%',
+  height: '90%',
+  top: 'center',
+  left: 'center',
+  border: { type: 'line', },
+  mouse: true,
+  keys: true,
+  style: style(),
+})
+
+tagList.key(['esc', 'q', 'del'], function(ch, key) {
+  screen.remove(tagList);
+  // save tags to file
+});
+tagList.key(['a'], function(ch, key) {
+  // add a tag
+  // show add tag input
+});
+tagList.key(['space'], function(ch, key) {
+  if (!selectedNote) {
+    return null;
+  }
+  // toggle tag by adding or removing the tag form the file’s tagas
+});
+
+// edit tags of a file
+screen.key(['t'], function(ch, key) {
+  if (!selectedNote) {
+    return null;
+  }
+  const fileTags = selectedNote.metadata.tags;
+  tagList.setItems(allTags.map(tag => {
+    if (fileTags.indexOf(tag) > -1) {
+      return `[x] ${tag}`;
+    } else {
+      return `[ ] ${tag}`;
+    }
+  }));
+  screen.append(tagList);
+  tagList.focus();
+  screen.render();
+});
+
+
+screen.key(['n'], function(ch, key) {
+  // let newFilename = '';
+  // if (!selectedNote) {
+  //   return null;
+  // }
+  // let newFilename = selectedNote.filename;
+  // let basename = path.basename(newFilename);
+  // if (basename.match(/\.template/));
+
+  screen.append(newNoteTitleInput);
+  newNoteTitleInput.focus();
+  screen.render();
 });
