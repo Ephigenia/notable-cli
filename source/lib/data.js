@@ -41,7 +41,7 @@ function fileFilter(file, stats) {
 async function readNote(filename) {
   return readFileP(filename, 'utf8')
     .then(content => {
-      return parseMD(content)
+      return parseMD(content);
     })
     .then(note => {
       note.filename = filename;
@@ -58,11 +58,11 @@ async function readNote(filename) {
  * @returns {Promise<ParsedNote[]>} 
  */
 async function read(path) {
-  return recursiveReadDir(path, [fileFilter])
+  return recursiveReadDirP(path, [fileFilter])
     .then(files => {
       return Promise.all(files.map(readNote));
     });
-};
+}
 
 module.exports = {
   read,

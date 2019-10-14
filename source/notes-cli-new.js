@@ -7,6 +7,7 @@ const pkg = require('./../package.json');
 
 program
   .version(pkg.version)
+  .description('Create a new note')
   ;
 
 program.parse(process.argv);

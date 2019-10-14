@@ -1,17 +1,38 @@
 {
   "name": "notable-cli",
-  "version": "0.0.0-dev",
   "description": "",
+  "version": "0.0.0-dev",
+  "author": "Ephigenia M. Eichner",
+  "license": "MIT",
+  "maintainer": {
+    "name": "Marcel Eichner",
+    "email": "marcel.eichner@ephigenia.de"
+  },
+  "contributors": [
+    {
+      "name": "Marcel Eichner",
+      "email": "marcel.eichner@ephigenia.de"
+    }
+  ],
+  "engines": {
+    "node": ">=10.15.3",
+    "npm": ">=6.4.1"
+  },
   "main": "source/notes-cli.js",
+  "bin": {
+    "notable-cli": "source/notable-cli.js"
+  },
+  "preferGlobal": true,
   "scripts": {
+    "lint:fix": "npm run lint -- --fix",
+    "lint": "eslint source",
     "start": "node $npm_package_main",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "chalk": "^2.4.2",
     "commander": "^3.0.2",
+    "eslint": "^6.5.1",
     "neo-blessed": "^0.2.0",
     "opn": "^6.0.0",
     "parse-md": "^2.0.2",
