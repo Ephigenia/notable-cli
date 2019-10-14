@@ -2,13 +2,15 @@
   "name": "notable-cli",
   "version": "0.0.0-dev",
   "description": "",
-  "main": "source/index.js",
+  "main": "source/notes-cli.js",
   "scripts": {
+    "start": "node $npm_package_main",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "chalk": "^2.4.2",
     "commander": "^3.0.2",
     "neo-blessed": "^0.2.0",
     "opn": "^6.0.0",

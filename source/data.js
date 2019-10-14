@@ -45,6 +45,7 @@ async function readNote(filename) {
     })
     .then(note => {
       note.filename = filename;
+      note.metadata.title = note.metadata.title || path.basename(note.filename);
       note.metadata.tags = (note.metadata.tags || []);
       note.metadata.created = new Date(note.metadata.created);
       note.metadata.modified = new Date(note.metadata.modified);
