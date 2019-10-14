@@ -42,7 +42,7 @@ function main() {
           const regexp = new RegExp(program.search, 'i');
           show = show && (
             note.metadata.title.match(regexp)
-            || note.Buffer.match(regexp)
+            || note.content.match(regexp)
           );
         }
         return show;
@@ -54,8 +54,7 @@ function main() {
           process.exit(1);
         }
         const filenames = shownNotes.map(note => note.filename);
-        const editor = 'sublime';
-        spawn(editor, filenames);
+        spawn(config.EDITOR, filenames);
         process.exit(0);
       }
 
