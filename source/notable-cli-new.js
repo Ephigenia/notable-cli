@@ -41,7 +41,10 @@ function main(title = '', tags = '') {
   // argument defaults and validation
   title = (title || TITLE_DEFAULT)
     .replace(/YYYY-MM-DD/i, now.toISOString().substr(0, 10))
-    .replace(/HH-MM/i, now.toISOString().substr(11, 5).replace(':', '-'));
+    .replace(/YYYYMMDD/i, now.toISOString().substr(0, 10).replace('-', ''))
+    .replace(/HH-MM/i, now.toISOString().substr(11, 5).replace(':', '-'))
+    .replace(/HHMM/i, now.toISOString().substr(11, 5).replace(':', ''));
+  // sanitize tags (trim), remove empty ones
   tags = tags.split(/\s+[,;]+\s*/).map(tag => tag.trim()).filter(v => v);
 
   // filename
@@ -81,7 +84,6 @@ function main(title = '', tags = '') {
 
   fs.writeFileSync(filename, template);
   spawn(config.EDITOR, [filename]);
-  process.exit(0);
 }
 
 program.action(main).parse(process.argv);
