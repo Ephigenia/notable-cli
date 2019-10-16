@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "chalk": "^2.4.2",
+    "columnify": "^1.5.4",
     "commander": "^3.0.2",
     "eslint": "^6.5.1",
     "parse-md": "^2.0.2",

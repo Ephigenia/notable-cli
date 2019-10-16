@@ -3,6 +3,8 @@
 
 const program = require('commander');
 const chalk = require('chalk');
+const path = require('path');
+const columnify = require('columnify');
 
 const data = require('./lib/data');
 const pkg = require('./../package.json');
@@ -72,26 +74,33 @@ function main() {
         }
       });
 
-      shownNotes.map((note) => {
-        if (program.oneline) {
-          console.log(
-            escape(chalk.red(note.filename)),
-            chalk.yellow(note.metadata.tags.join(',')),
-            note.metadata.title
-          );
-        } else if (program.full) {
-          console.log([
-            chalk.green(note.filename),
-            Object.entries(note.metadata).map(([key, value]) => {
-              let valueStr = Array.isArray(value) ? value.join(', ') : value;
-              return key + ': ' + chalk.yellow(valueStr);
-            }).join('\n'),
-            note.content
-          ].join("\n"));
-        } else {
-          console.log(escape(note.filename));
-        }
-      });
+
+      if (program.oneline) {
+        const data = notes.map(note => {
+          return [
+            path.join(chalk.green(path.dirname(escape(note.filename))), chalk.yellow(path.basename(escape(note.filename)))),
+            note.metadata.tags.join(','),
+            note.metadata.title,
+          ];
+        });
+        const columns = columnify(data, {
+          showHeaders: false,
+        });
+        console.log(columns);
+      } else if (program.full) {
+        const data = notes.map(note => [
+          chalk.green(note.filename),
+          Object.entries(note.metadata).map(([key, value]) => {
+            let valueStr = Array.isArray(value) ? value.join(', ') : value;
+            return chalk.yellow(key) + ': ' + valueStr;
+          }).join('\n'),
+          "\n" + note.content,
+        ]);
+        console.log(data.join("\n"));
+      } else {
+        const data = notes.map(note => escape(note.filename));
+        console.log(data.join("\n"));
+      }
     });
 }
 

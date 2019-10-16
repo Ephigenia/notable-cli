@@ -11,14 +11,14 @@ const config = require('./config');
 
 program
   .version(pkg.version)
-  .description('Create a new note', {
+  .description('Creates a new note', {
     title: 'title of the note to be created, YYYY-MM-DD and HH-MM would be replaced',
     tags: 'csv list of tags to add',
   })
   .arguments('[title] [tags]')
   ;
 
-const TITLE_DEFAULT = 'YYYY-MM-DD HH-MM';
+const TITLE_DEFAULT = 'YYYYMMDDHHMM Note';
 
 function renderTemplate(vars = {}) {
   vars.title = vars.title || 'no-title';
@@ -35,7 +35,7 @@ modified: '${vars.modified.toISOString()}'
   return content;
 }
 
-function main(title = '', tags = '') {
+function main(title = TITLE_DEFAULT, tags = '') {
   const now = new Date();
 
   // argument defaults and validation

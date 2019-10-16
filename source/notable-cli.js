@@ -12,5 +12,4 @@ program
   .command('tags', 'list tags')
   .description(`${pkg.description}`);
 
-
 program.parse(process.argv);
