@@ -80,7 +80,14 @@ function main() {
             note.metadata.title
           );
         } else if (program.full) {
-          console.log([chalk.green(note.filename), note.content].join("\n"));
+          console.log([
+            chalk.green(note.filename),
+            Object.entries(note.metadata).map(([key, value]) => {
+              let valueStr = Array.isArray(value) ? value.join(', ') : value;
+              return key + ': ' + chalk.yellow(valueStr);
+            }).join('\n'),
+            note.content
+          ].join("\n"));
         } else {
           console.log(escape(note.filename));
         }
