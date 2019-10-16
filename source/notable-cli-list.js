@@ -34,20 +34,19 @@ function main() {
   return data.read(config.HOME_PATH)
     .then(notes => {
       const shownNotes = notes.filter((note) => {
-        let show = true;
         if (program.tag) {
-          show = show && note.metadata.tags.some(tag => {
+          if (note.metadata.tags.some(tag => {
             return program.tag.indexOf(tag) > -1;
-          });
+          })) return true;
         }
         if (program.search) {
           const regexp = new RegExp(program.search, 'i');
-          show = show && (
-            note.metadata.title.match(regexp)
-            || note.content.match(regexp)
-          );
+          if (
+            regexp.test(note.metadata.title)
+            || regexp.test(note.content)
+          ) return true;
         }
-        return show;
+        return false;
       });
 
       if (program.editor) {
@@ -76,7 +75,7 @@ function main() {
 
 
       if (program.oneline) {
-        const data = notes.map(note => {
+        const data = shownNotes.map(note => {
           return [
             path.join(chalk.green(path.dirname(escape(note.filename))), chalk.yellow(path.basename(escape(note.filename)))),
             note.metadata.tags.join(','),
@@ -88,7 +87,7 @@ function main() {
         });
         console.log(columns);
       } else if (program.full) {
-        const data = notes.map(note => [
+        const data = shownNotes.map(note => [
           chalk.green(note.filename),
           Object.entries(note.metadata).map(([key, value]) => {
             let valueStr = Array.isArray(value) ? value.join(', ') : value;
@@ -98,7 +97,7 @@ function main() {
         ]);
         console.log(data.join("\n"));
       } else {
-        const data = notes.map(note => escape(note.filename));
+        const data = shownNotes.map(note => escape(note.filename));
         console.log(data.join("\n"));
       }
     });
