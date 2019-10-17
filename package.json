@@ -4,6 +4,16 @@
   "version": "0.0.0-dev",
   "author": "Ephigenia M. Eichner",
   "license": "MIT",
+  "homepage": "https://github.com/Ephigenia/notable-cli/",
+  "keywords": [
+    "cli",
+    "markdown",
+    "note-taking",
+    "note",
+    "notebook",
+    "notes",
+    "tui"
+  ],
   "maintainer": {
     "name": "Marcel Eichner",
     "email": "marcel.eichner@ephigenia.de"

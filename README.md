@@ -65,7 +65,7 @@ Same thing can be archived by:
 
 ## Interactive Mode
 
-The interactive mode allows you to list all the notes, tags and creation date while entering a search query on top and preview the notes as soon as there’s one selected in the list:
+The interactive mode starts a [neo-blessed](https://github.com/embark-framework/neo-blessed) powered interactive cli inerface that allows you to list all the notes, tags and creation date while entering a search query on top and preview the notes as soon as there’s one selected in the list:
 
     notable-cli --interactive
 
