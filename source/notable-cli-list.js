@@ -33,20 +33,23 @@ function escape(str) {
 function main() {
   return data.read(config.HOME_PATH)
     .then(notes => {
+      // filters the notes according to --search and --tag filter
       const shownNotes = notes.filter((note) => {
         if (program.tag) {
+          // if one tag matches the searched tags (intersection)
           if (note.metadata.tags.some(tag => {
             return program.tag.indexOf(tag) > -1;
           })) return true;
         }
         if (program.search) {
+          // match using regexp on title and content
           const regexp = new RegExp(program.search, 'i');
           if (
             regexp.test(note.metadata.title)
             || regexp.test(note.content)
           ) return true;
         }
-        return false;
+        return (!program.tag && !program.search);
       });
 
       if (program.editor) {
