@@ -12,6 +12,15 @@ const config = require('./config');
 
 const { spawnSync } = require('child_process');
 
+const sortOptions = [
+  '-created',
+  'created',
+  'title',
+  '-title',
+  '-modified',
+  'modified',
+];
+
 program
   .version(pkg.version)
   .arguments('[query]')
@@ -22,7 +31,7 @@ program
   .option('-e, --editor', 'open editor with resulting filtered notes')
   .option('-o, --oneline', 'one-line output', false)
   .option('-i, --interactive', 'interactive selection of file', false)
-  .option('-s, --sort <criteria>', 'sorting', 'title')
+  .option('-s, --sort <criteria>', 'sorting', '-created')
   .option('-t, --tag <tag>', 'show notes having the given tag, case-sensitive', (val) => {
     return val.split(/\s*,\s*/).map(v => v.trim()).filter(v => v);
   })
@@ -51,17 +60,22 @@ function notesFilter(note, query = '', tags = null) {
   return false;
 }
 
-function compareNotes(a, b, sort) {
+function compareNotes(a, b, field) {
+  let modifier = v => v;
+  let sort = field.replace(/^-/, '');
+  if (sort !== field) {
+    modifier = v => -v;
+  }
   switch(sort) {
     case 'created':
-      return a.metadata.created - b.metadata.created;
+      return modifier(a.metadata.created - b.metadata.created);
     case 'filename':
-      return a.metadata.title.localeCompare(b.metadata.title);
+      return modifier(a.metadata.title.localeCompare(b.metadata.title));
     case 'modified':
-      return a.metadata.modified - b.metadata.modified;
+      return modifier(a.metadata.modified - b.metadata.modified);
     case 'title':
     default:
-      return a.metadata.title.localeCompare(b.metadata.title);
+      return modifier(a.metadata.title.localeCompare(b.metadata.title));
   }
 }
 
@@ -69,7 +83,7 @@ function main(query = '') {
   return data.read(config.HOME_PATH)
     .then(notes => {
       // filters the notes according to --search and --tag filter
-      const shownNotes = notes.filter(note => notesFilter(note, query, program.tag));
+      let shownNotes = notes.filter(note => notesFilter(note, query, program.tag));
 
       if (program.interactive) {
         const blessed = require('neo-blessed');
@@ -81,6 +95,7 @@ function main(query = '') {
         screen.title = pkg.name;
         const searchBox = blessed.Textbox({
           label: 'Search',
+          padding: { left: 1, right: 1 },
           parent: screen,
           top: '0',
           left: '0',
@@ -93,11 +108,12 @@ function main(query = '') {
           mouse: true,
         });
         const listBox = blessed.ListTable({
+          padding: { left: 1, right: 1 },
           parent: screen,
           top: 3,
           left: '0',
           width: '100%',
-          height: '100%-3',
+          height: '50%-3',
           border: { type: 'line' },
           align: 'left',
           style: Object.assign(blessedStyle(), { header: { bold: true, fg: 'white' }}),
@@ -105,27 +121,56 @@ function main(query = '') {
           mouse: true,
         });
 
+        const contentBox = blessed.Text({
+          padding: { left: 1, right: 1 },
+          parent: screen,
+          top: '50%',
+          left: '0',
+          width: '100%',
+          height: '50%',
+          border: { type: 'line' },
+          align: 'left',
+          style: Object.assign(blessedStyle(), { header: { bold: true, fg: 'white' }}),
+        });
+
         const updateListBox = function(query, sort) {
-          const filteredNotes = notes.filter(note => notesFilter(note, query, program.tag));
-          filteredNotes.sort((a, b) => compareNotes(a, b, sort));
-          listBox.setData([[
-            'Title' + (sort === 'title' ? ' A-Z' : ''),
-            'Tags',
-            'Created' + (sort === 'created' ? ' A-Z' : ''),
-          ]]
-            .concat(filteredNotes.map(note => ([
-              note.metadata.title,
-              note.metadata.tags.join(', '),
-              note.metadata.created.toJSON(),
-            ])))
-          );
+          shownNotes = notes.filter(note => notesFilter(note, query, program.tag));
+          shownNotes.sort((a, b) => compareNotes(a, b, sort));
+          listBox.setLabel(`[ ${shownNotes.length} notes sort by ${sort} ]`);
+          listBox.setData(
+            [['Title','Tags', 'Created']]
+            .concat(
+              shownNotes.map(note => ([
+                note.metadata.title,
+                note.metadata.tags.join(', '),
+                note.metadata.created.toJSON().replace(/T|:[0-9.]+Z$/g, ' '),
+              ]))
+            ));
           screen.render();
         };
 
-        // open selected note when selected
-        listBox.on('select', (item, index) => {
-          const note = shownNotes[index];
-          spawnSync(config.EDITOR, [note.filename]);
+        // show preview of note when element in the listbox gets selected
+        const onListBoxEvent = function() {
+          const selectedIndex = listBox.selected - 1;
+          const note = shownNotes[selectedIndex];
+          if (note) {
+            contentBox.setLabel(note.filename);
+            contentBox.setContent(note.content);
+          } else {
+            contentBox.setLabel('no file selected');
+            contentBox.setContent('');
+          }
+          screen.render();
+        };
+        listBox.on('element click', onListBoxEvent);
+        listBox.key(['up', 'down'], onListBoxEvent);
+
+        contentBox.key('o', () => {
+          const selectedIndex = listBox.selected - 1;
+          const note = shownNotes[selectedIndex];
+          if (note) {
+            spawnSync(config.EDITOR, [note.filename]);
+          }
         });
 
         // watch for changes in the search box and filter the results
@@ -136,21 +181,26 @@ function main(query = '') {
             updateListBox(query, program.sort);
             lastValue = query;
           }
-        }, 500);
+        }, 1000);
 
         // switch between screen elements using TAB and Shift-TAB
         searchBox.key(['down'], () => {
           listBox.focus();
         });
+
+        // change sort order
         screen.key(['s'], () => {
-          if (program.sort === 'title') {
-            program.sort = 'created';
-          } else if (program.sort === 'created') {
-            program.sort = 'title';
+          const currentIndex = sortOptions.indexOf(program.sort);
+          let nextIndex = currentIndex + 1;
+          if (nextIndex >= sortOptions.length) {
+            nextIndex = 0;
           }
+          program.sort = sortOptions[nextIndex];
           updateListBox(query, program.sort);
         });
+
         screen.key(['tab'], () => screen.focusNext());
+        screen.key(['shift-tab'], () => screen.focusPrevious());
         // make it possible to exit
         screen.key(['escape', 'C-c', 'q'], function() {
           return process.exit(0);
@@ -177,9 +227,10 @@ function main(query = '') {
       if (program.oneline) {
         const data = shownNotes.map(note => {
           return [
-            path.join(chalk.green(path.dirname(escape(note.filename))), chalk.yellow(path.basename(escape(note.filename)))),
+            // path.join(chalk.green(path.dirname(escape(note.filename))), chalk.yellow(path.basename(escape(note.filename)))),
+            chalk.green(note.metadata.created.toJSON()),
+            chalk.yellow(note.metadata.title),
             note.metadata.tags.join(','),
-            note.metadata.title,
           ];
         });
         const columns = columnify(data, {
