@@ -3,7 +3,6 @@ Simple to use jekyll-markdown parsing note-taking app for the command line and y
 Package is still in development and testing. There may be breaking changes.
 
 Features
-
 ===============================================================================
 
 - Create new notes using templates 
