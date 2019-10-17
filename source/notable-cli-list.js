@@ -10,7 +10,7 @@ const data = require('./lib/data');
 const pkg = require('./../package.json');
 const config = require('./config');
 
-const { spawn } = require('child_process');
+const { spawnSync } = require('child_process');
 
 program
   .version(pkg.version)
@@ -32,6 +32,7 @@ function escape(str) {
   return str.replace(/(["\s'$`\\])/g,'\\$1');
 }
 
+// TODO Query is YYYYMMDD then filter by date
 function notesFilter(note, query = '', tags = null) {
   if (!tags && !query) return true;
   if (Array.isArray(tags) && tags.length > 0) {
@@ -41,7 +42,11 @@ function notesFilter(note, query = '', tags = null) {
   if (query) {
     // match using regexp on title and content
     const regexp = new RegExp(query, 'i');
-    if (regexp.test(note.metadata.title) || regexp.test(note.content)) return true;
+    if (
+      note.metadata.tags.some(tag => regexp.test(tag)) ||
+      regexp.test(note.metadata.title) ||
+      regexp.test(note.content
+    )) return true;
   }
   return false;
 }
@@ -67,9 +72,83 @@ function main(query = '') {
       const shownNotes = notes.filter(note => notesFilter(note, query, program.tag));
 
       if (program.interactive) {
-        console.log('interactive mode not finished yet');
+        const blessed = require('neo-blessed');
+        const blessedStyle = require('./lib/blessed-style');
+        const screen = blessed.screen({
+          smartCSR: true,
+          sendFocus: true,
+        });
+        screen.title = pkg.name;
+        const searchBox = blessed.Textbox({
+          label: 'Search',
+          parent: screen,
+          top: '0',
+          left: '0',
+          width: '100%',
+          height: 3,
+          border: { type: 'line' },
+          style: blessedStyle(),
+          mouse: true,
+          inputOnFocus: true,
+          keys: true,
+          value: query,
+        });
+        const listBox = blessed.List({
+          label: 'Notes',
+          parent: screen,
+          top: 3,
+          left: '0',
+          width: '100%',
+          height: '100%-3',
+          border: { type: 'line' },
+          style: blessedStyle(),
+          inputOnFocus: true,
+          mouse: true,
+          keys: true,
+        });
 
-        process.exit();
+        const updateListBox = function(query) {
+          const filteredNotes = notes.filter(note => notesFilter(note, query, program.tag))
+          // TODO output with tags
+          listBox.setItems(filteredNotes.map(note => {
+            return note.metadata.title + ' ' + note.metadata.tags.join(', ');
+          }));
+          screen.render();
+        };
+
+        // open selected note when selected
+        listBox.on('select', (item, index) => {
+          const note = shownNotes[index];
+          spawnSync(config.EDITOR, [note.filename]);
+        });
+
+        // watch for changes in the search box and filter the results
+        let lastValue;
+        setInterval(() => {
+          const query = searchBox.value;
+          if (lastValue !== query) {
+            updateListBox(query);
+            lastValue = query;
+          }
+        }, 500);
+
+        // switch between screen elements using TAB and Shift-TAB
+        searchBox.key(['down', 'tab'], () => {
+          searchBox.submit();
+          screen.focusPush(listBox);
+          return false;
+        });
+
+        screen.key(['tab'], () => screen.focusNext());
+        // make it possible to exit
+        screen.key(['escape', 'C-c', 'q'], function() {
+          return process.exit(0);
+        });
+
+        searchBox.focus();
+        updateListBox(query);
+        screen.render();
+        return;
       }
 
       if (program.editor) {
@@ -78,7 +157,7 @@ function main(query = '') {
           process.exit(1);
         }
         const filenames = shownNotes.map(note => note.filename);
-        spawn(config.EDITOR, filenames);
+        spawnSync(config.EDITOR, filenames);
         process.exit(0);
       }
 

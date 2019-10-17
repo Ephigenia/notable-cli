@@ -11,6 +11,7 @@ const recursiveReadDirP = util.promisify(recursiveReadDir);
 
 function fileFilter(file, stats) {
   const basename = path.basename(file);
+  if (basename.match(/^\./)) return true;
   return !stats.isDirectory() && !basename.match(/\.md$/);
 }
 
@@ -36,7 +37,7 @@ function fileFilter(file, stats) {
 
 /**
  * @param {string} filename
- * @returns {Promise<ParsedNote>} 
+ * @returns {Promise<ParsedNote>}
  */
 async function readNote(filename) {
   return readFileP(filename, 'utf8')
@@ -47,6 +48,12 @@ async function readNote(filename) {
       note.filename = filename;
       note.metadata.title = note.metadata.title || path.basename(note.filename);
       note.metadata.tags = (note.metadata.tags || []);
+      // sort the tags alphabetically
+      if (note.metadata.tags) {
+        note.metadata.tags.sort((a, b) => {
+          return a.localeCompare(b);
+        });
+      }
       note.metadata.created = new Date(note.metadata.created);
       note.metadata.modified = new Date(note.metadata.modified);
       return note;
@@ -55,7 +62,7 @@ async function readNote(filename) {
 
 /**
  * @param {string} filename
- * @returns {Promise<ParsedNote[]>} 
+ * @returns {Promise<ParsedNote[]>}
  */
 async function read(path) {
   return recursiveReadDirP(path, [fileFilter])
