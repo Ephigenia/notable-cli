@@ -18,18 +18,31 @@
     "node": ">=10.15.3",
     "npm": ">=6.4.1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ephigenia/notable-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Ephigenia/notable-cli/issues"
+  },
   "main": "source/notable-cli.js",
   "bin": {
     "notable-cli": "source/notable-cli.js"
   },
   "preferGlobal": true,
   "scripts": {
+    "changelog:preview": "conventional-changelog --output-unreleased -p angular",
+    "changelog": "conventional-changelog -s -i CHANGELOG.md -p angular -r 0",
     "lint:fix": "npm run lint -- --fix",
     "lint": "eslint source",
     "start": "node $npm_package_main",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "version:recommend": "conventional-recommended-bump --preset angular",
+    "version": "npm run changelog && git add CHANGELOG.md"
   },
   "dependencies": {
+    "conventional-changelog-cli": "^2.0.25",
+    "conventional-recommended-bump": "^6.0.2",
     "chalk": "^2.4.2",
     "columnify": "^1.5.4",
     "commander": "^3.0.2",

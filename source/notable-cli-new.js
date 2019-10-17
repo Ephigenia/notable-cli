@@ -4,8 +4,8 @@
 const program = require('commander');
 const fs = require('fs');
 const path = require('path');
-const { spawn } = require('child_process');
 
+const data = require('./lib/data');
 const pkg = require('./../package.json');
 const config = require('./config');
 
@@ -83,7 +83,7 @@ function main(title = TITLE_DEFAULT, tags = '') {
   });
 
   fs.writeFileSync(filename, template);
-  spawn(config.EDITOR, [filename]);
+  data.open([filename]);
 }
 
 program.action(main).parse(process.argv);

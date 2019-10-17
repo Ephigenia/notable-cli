@@ -13,15 +13,13 @@ program
   ;
 
 function main() {
-  return data.read(config.HOME_PATH)
+  return data.readFromPath(config.HOME_PATH)
     .then(notes => {
       let tags = new Set();
       notes.forEach(note => note.metadata.tags.forEach(tags.add.bind(tags)));
       tags = Array.from(tags);
       tags.sort((a, b) => String(a).localeCompare(String(b)));
-      tags.forEach(tag => {
-        console.log(tag);
-      });
+      tags.forEach(tag => console.log(tag));
     });
 }
 
