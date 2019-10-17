@@ -49,21 +49,24 @@ const tui = function(notes, query, sort, queryTag) {
     height: '50%',
     border: { type: 'line' },
     align: 'left',
-    style: Object.assign(style(), { header: { bold: true, fg: 'white' }}),
+    style: style(),
   });
 
   const updateListBox = function(query, sort) {
     shownNotes = notes.filter(note => data.filter.filter(note, query, queryTag));
     shownNotes.sort((a, b) => data.sort.sort(a, b, sort));
-    listBox.setLabel(`[ ${shownNotes.length} notes sort by ${sort} ]`);
+    listBox.setLabel(`Notes sort by ${sort} ]`);
     listBox.setData(
-      [['Title','Tags', 'Created']]
+      [['Title','Tags', 'Created / Age']]
       .concat(
-        shownNotes.map(note => ([
-          note.metadata.title,
-          note.metadata.tags.join(', '),
-          note.metadata.created.toJSON().replace(/T|:[0-9.]+Z$/g, ' '),
-        ]))
+        shownNotes.map(note => {
+          const ageInDays = Math.round((Date.now() - note.metadata.created.getTime()) / 1000 / 3600 / 24);
+          return ([
+            note.metadata.title,
+            note.metadata.tags.join(', '),
+            note.metadata.created.toJSON().replace(/T|:[0-9.]+Z$/g, ' ') + `/ ${ageInDays}`,
+          ]);
+        })
       ));
     screen.render();
   };
@@ -72,7 +75,7 @@ const tui = function(notes, query, sort, queryTag) {
   const onListBoxEvent = function() {
     const selectedIndex = listBox.selected - 1;
     const note = shownNotes[selectedIndex] || {};
-    contentBox.setLabel(`[ ${note.filename || 'no-file'} ]`);
+    contentBox.setLabel(note.filename || 'no-file');
     contentBox.setContent(data.render(note.content || ''));
     screen.render();
   };
@@ -110,8 +113,17 @@ const tui = function(notes, query, sort, queryTag) {
     if (nextIndex >= data.sort.options.length) {
       nextIndex = 0;
     }
-    const newsortValue = data.sort.options[nextIndex];
-    updateListBox(query, newsortValue);
+    sort = data.sort.options[nextIndex];
+    updateListBox(query, sort);
+  });
+  screen.key(['S'], () => {
+    const currentIndex = data.sort.options.indexOf(sort);
+    let nextIndex = currentIndex - 1;
+    if (nextIndex < 0) {
+      nextIndex = data.sort.options.length - 1;
+    }
+    sort = data.sort.options[nextIndex];
+    updateListBox(query, sort);
   });
 
   screen.key(['tab'], () => screen.focusNext());
