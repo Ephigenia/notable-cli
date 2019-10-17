@@ -2,7 +2,9 @@
 
 const chalk = require('chalk');
 const columnify = require('columnify');
+
 const escapeFilename = require('./escapeFilename');
+const render = require('./data/render');
 
 function full(notes) {
   const data = notes.map(note => [
@@ -11,7 +13,7 @@ function full(notes) {
       let valueStr = Array.isArray(value) ? value.join(', ') : value;
       return chalk.yellow(key) + ': ' + valueStr;
     }).join('\n'),
-    "\n" + note.content,
+    "\n" + render(note.content),
   ]);
   return data.join("\n");
 }

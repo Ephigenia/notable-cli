@@ -73,7 +73,7 @@ const tui = function(notes, query, sort, queryTag) {
     const selectedIndex = listBox.selected - 1;
     const note = shownNotes[selectedIndex] || {};
     contentBox.setLabel(`[ ${note.filename || 'no-file'} ]`);
-    contentBox.setContent(note.content || '');
+    contentBox.setContent(data.render(note.content || ''));
     screen.render();
   };
   listBox.on('element click', onListBoxEvent);
