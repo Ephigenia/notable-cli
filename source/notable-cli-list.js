@@ -14,13 +14,15 @@ const { spawn } = require('child_process');
 
 program
   .version(pkg.version)
-  .description('list/show/filter notes')
+  .arguments('[query]')
+  .description('list/show/filter notes', {
+    query: 'Optional search query to use'
+  })
   .option('-f, --full', 'full output', false)
   .option('-e, --editor', 'open editor with resulting filtered notes')
   .option('-o, --oneline', 'one-line output', false)
   .option('-i, --interactive', 'interactive selection of file', false)
   .option('-s, --sort <criteria>', 'sorting', 'title')
-  .option('--search <regexp>', 'searching')
   .option('-t, --tag <tag>', 'show notes having the given tag, case-sensitive', (val) => {
     return val.split(/\s*,\s*/).map(v => v.trim()).filter(v => v);
   })
@@ -30,27 +32,45 @@ function escape(str) {
   return str.replace(/(["\s'$`\\])/g,'\\$1');
 }
 
-function main() {
+function notesFilter(note, query = '', tags = null) {
+  if (!tags && !query) return true;
+  if (Array.isArray(tags) && tags.length > 0) {
+    // if one tag matches the searched tags (intersection)
+    if (note.metadata.tags.some(tag => tags.indexOf(tag) > -1)) return true;
+  }
+  if (query) {
+    // match using regexp on title and content
+    const regexp = new RegExp(query, 'i');
+    if (regexp.test(note.metadata.title) || regexp.test(note.content)) return true;
+  }
+  return false;
+}
+
+function compareNotes(a, b, sort) {
+  switch(sort) {
+    case 'created':
+      return a.metadata.created - b.metadata.created;
+    case 'filename':
+      return a.metadata.title.localeCompare(b.metadata.title);
+    case 'modified':
+      return a.metadata.modified - b.metadata.modified;
+    case 'title':
+    default:
+      return a.metadata.title.localeCompare(b.metadata.title);
+  }
+}
+
+function main(query = '') {
   return data.read(config.HOME_PATH)
     .then(notes => {
       // filters the notes according to --search and --tag filter
-      const shownNotes = notes.filter((note) => {
-        if (program.tag) {
-          // if one tag matches the searched tags (intersection)
-          if (note.metadata.tags.some(tag => {
-            return program.tag.indexOf(tag) > -1;
-          })) return true;
-        }
-        if (program.search) {
-          // match using regexp on title and content
-          const regexp = new RegExp(program.search, 'i');
-          if (
-            regexp.test(note.metadata.title)
-            || regexp.test(note.content)
-          ) return true;
-        }
-        return (!program.tag && !program.search);
-      });
+      const shownNotes = notes.filter(note => notesFilter(note, query, program.tag));
+
+      if (program.interactive) {
+        console.log('interactive mode not finished yet');
+
+        process.exit();
+      }
 
       if (program.editor) {
         if (shownNotes.length === 0) {
@@ -62,20 +82,7 @@ function main() {
         process.exit(0);
       }
 
-      shownNotes.sort((a, b) => {
-        switch(program.sort) {
-          case 'created':
-            return a.metadata.created - b.metadata.created;
-          case 'filename':
-            return a.metadata.title.localeCompare(b.metadata.title);
-          case 'modified':
-            return a.metadata.modified - b.metadata.modified;
-          case 'title':
-          default:
-            return a.metadata.title.localeCompare(b.metadata.title);
-        }
-      });
-
+      shownNotes.sort((a, b) => compareNotes(a, b, program.sort));
 
       if (program.oneline) {
         const data = shownNotes.map(note => {
