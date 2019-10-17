@@ -88,31 +88,37 @@ function main(query = '') {
           height: 3,
           border: { type: 'line' },
           style: blessedStyle(),
-          mouse: true,
-          inputOnFocus: true,
-          keys: true,
           value: query,
+          keys: true,
+          mouse: true,
         });
-        const listBox = blessed.List({
-          label: 'Notes',
+        const listBox = blessed.ListTable({
           parent: screen,
           top: 3,
           left: '0',
           width: '100%',
           height: '100%-3',
           border: { type: 'line' },
-          style: blessedStyle(),
-          inputOnFocus: true,
-          mouse: true,
+          align: 'left',
+          style: Object.assign(blessedStyle(), { header: { bold: true, fg: 'white' }}),
           keys: true,
+          mouse: true,
         });
 
-        const updateListBox = function(query) {
-          const filteredNotes = notes.filter(note => notesFilter(note, query, program.tag))
-          // TODO output with tags
-          listBox.setItems(filteredNotes.map(note => {
-            return note.metadata.title + ' ' + note.metadata.tags.join(', ');
-          }));
+        const updateListBox = function(query, sort) {
+          const filteredNotes = notes.filter(note => notesFilter(note, query, program.tag));
+          filteredNotes.sort((a, b) => compareNotes(a, b, sort));
+          listBox.setData([[
+            'Title' + (sort === 'title' ? ' A-Z' : ''),
+            'Tags',
+            'Created' + (sort === 'created' ? ' A-Z' : ''),
+          ]]
+            .concat(filteredNotes.map(note => ([
+              note.metadata.title,
+              note.metadata.tags.join(', '),
+              note.metadata.created.toJSON(),
+            ])))
+          );
           screen.render();
         };
 
@@ -127,18 +133,23 @@ function main(query = '') {
         setInterval(() => {
           const query = searchBox.value;
           if (lastValue !== query) {
-            updateListBox(query);
+            updateListBox(query, program.sort);
             lastValue = query;
           }
         }, 500);
 
         // switch between screen elements using TAB and Shift-TAB
-        searchBox.key(['down', 'tab'], () => {
-          searchBox.submit();
-          screen.focusPush(listBox);
-          return false;
+        searchBox.key(['down'], () => {
+          listBox.focus();
         });
-
+        screen.key(['s'], () => {
+          if (program.sort === 'title') {
+            program.sort = 'created';
+          } else if (program.sort === 'created') {
+            program.sort = 'title';
+          }
+          updateListBox(query, program.sort);
+        });
         screen.key(['tab'], () => screen.focusNext());
         // make it possible to exit
         screen.key(['escape', 'C-c', 'q'], function() {
@@ -146,7 +157,7 @@ function main(query = '') {
         });
 
         searchBox.focus();
-        updateListBox(query);
+        updateListBox(query, program.sort);
         screen.render();
         return;
       }

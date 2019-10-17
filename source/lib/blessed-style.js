@@ -8,13 +8,6 @@ module.exports = function() {
       border: {
         fg: 'blue',
       },
-    },
-    input: {
-      bg: 'red',
-    },
-    selected: {
-      bg: 'yellow',
-      fg: 'black',
     }
   };
 };
