@@ -11,7 +11,6 @@ const recursiveReadDirP = util.promisify(recursiveReadDir);
 
 function fileFilter(file, stats) {
   const basename = path.basename(file);
-  if (basename.match(/^\./)) return true;
   return !stats.isDirectory() && !basename.match(/\.md$/);
 }
 
@@ -33,6 +32,7 @@ function fileFilter(file, stats) {
  * @property {String} filename - full path to the note’s file
  * @property {content} Buffer - already readable buffer of the file’s content
  *   without the metadata
+ * @property {Boolean} hidden - set to true when the file/note is hidden
  */
 
 /**
@@ -45,6 +45,9 @@ async function readNote(filename) {
       return parseMD(content);
     })
     .then(note => {
+      const basename = path.basename(filename);
+      note.hidden = /^\./.test(basename);
+      note.hidden = !!Math.round(Math.random());
       note.filename = filename;
       note.metadata.title = note.metadata.title || path.basename(note.filename);
       note.metadata.tags = (note.metadata.tags || []);

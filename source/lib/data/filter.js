@@ -7,9 +7,11 @@
  * @param {string[]} tags
  * @return {Boolean}
  */
-function filter(note, query = '', tags = null) {
+function filter(note, query = '', tags = null, showHidden = false) {
   // TODO Query is YYYYMMDD then filter by date
   if (!tags && !query) return true;
+
+  if (!showHidden && note.hidden) return false;
 
   if (Array.isArray(tags) && tags.length > 0) {
     // if one tag matches the searched tags (intersection)

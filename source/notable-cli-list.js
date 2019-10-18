@@ -22,6 +22,7 @@ program
   .option('-j, --json', 'json output', false)
   .option('-o, --oneline', 'one-line output', false)
   .option('-s, --sort <criteria>', 'sorting', '-created')
+  .option('-a, --all', 'show all notes, also hidden notes', false)
   .option('-t, --tag <tag>', 'show notes having the given tag, case-sensitive', (val) => {
     return val.split(/\s*,\s*/).map(v => v.trim()).filter(v => v);
   })
@@ -31,11 +32,11 @@ function main(query = '') {
   return data.readFromPath(config.HOME_PATH)
     .then(notes => {
       if (program.interactive) {
-        return tui(notes, query, program.sort, program.tag);
+        return tui(notes, query, program.sort, program.tag, program.all);
       }
 
       // filters the notes according to --search and --tag filter
-      const shownNotes = notes.filter(note => data.filter.filter(note, query, program.tag));
+      const shownNotes = notes.filter(note => data.filter.filter(note, query, program.tag, program.all));
       shownNotes.sort((a, b) => data.sort.sort(a, b, program.sort));
       if (program.editor) {
         if (shownNotes.length === 0) {

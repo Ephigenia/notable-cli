@@ -1,11 +1,12 @@
 'use strict';
 
 const blessed = require('neo-blessed');
+const chalk = require('chalk');
 
 const style = require('./style');
 const data = require('./../data');
 
-const tui = function(notes, query, sort, queryTag) {
+const tui = function(notes, query, sort, queryTag, includeHidden) {
   let shownNotes = [];
 
   const screen = blessed.screen({
@@ -53,7 +54,7 @@ const tui = function(notes, query, sort, queryTag) {
   });
 
   const updateListBox = function(query, sort) {
-    shownNotes = notes.filter(note => data.filter.filter(note, query, queryTag));
+    shownNotes = notes.filter(note => data.filter.filter(note, query, queryTag, includeHidden));
     shownNotes.sort((a, b) => data.sort.sort(a, b, sort));
     listBox.setLabel(`Notes sort by ${sort} ]`);
     listBox.setData(
