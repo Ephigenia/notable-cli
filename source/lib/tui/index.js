@@ -41,7 +41,7 @@ const tui = function(notes, query, sort, queryTag) {
   });
 
   const contentBox = blessed.Text({
-    padding: { left: 1, right: 1 },
+    padding: { left: 1, right: 1, top: 1, bottom: 1 },
     parent: screen,
     top: '50%',
     left: '0',
@@ -126,6 +126,11 @@ const tui = function(notes, query, sort, queryTag) {
     updateListBox(query, sort);
   });
 
+  // jump to search when f or / is pressed
+  screen.key(['f', '/'], () => {
+    searchBox.focus();
+    searchBox.readInput();
+  });
   screen.key(['tab'], () => screen.focusNext());
   screen.key(['shift-tab'], () => screen.focusPrevious());
   // make it possible to exit
