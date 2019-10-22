@@ -18,7 +18,7 @@ program
   .arguments('[title] [tags]')
   ;
 
-const TITLE_DEFAULT = 'YYYYMMDDHHMM Note';
+const TITLE_DEFAULT = 'YYYYMMDD-HHMM Note';
 
 function renderTemplate(vars = {}) {
   vars.title = vars.title || 'no-title';
@@ -39,16 +39,17 @@ function main(title = TITLE_DEFAULT, tags = '') {
   const now = new Date();
 
   // argument defaults and validation
-  title = (title || TITLE_DEFAULT)
+  const renderedTitle = (title || TITLE_DEFAULT)
     .replace(/YYYY-MM-DD/i, now.toISOString().substr(0, 10))
-    .replace(/YYYYMMDD/i, now.toISOString().substr(0, 10).replace('-', ''))
-    .replace(/HH-MM/i, now.toISOString().substr(11, 5).replace(':', '-'))
-    .replace(/HHMM/i, now.toISOString().substr(11, 5).replace(':', ''));
+    .replace(/YYYYMMDD/i, now.toISOString().substr(0, 10).replace(/-/g, ''))
+    .replace(/HH-MM/i, now.toISOString().substr(11, 5).replace(/:/g, '-'))
+    .replace(/HHMM/i, now.toISOString().substr(11, 5).replace(/:/g, ''));
+
   // sanitize tags (trim), remove empty ones
   tags = tags.split(/\s+[,;]+\s*/).map(tag => tag.trim()).filter(v => v);
 
   // filename
-  const basename = title;
+  const basename = renderedTitle;
   const filename = path.join(config.HOME_PATH, basename) + '.md';
   try {
     // check if title doesn’t contain a dot as first character or slashes
