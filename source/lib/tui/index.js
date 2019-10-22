@@ -38,6 +38,8 @@ const tui = function(notes, query, sort, queryTag, includeHidden) {
     style: Object.assign(style(), { header: { bold: true, fg: 'white' }}),
     keys: true,
     mouse: true,
+    scrollable: true,
+    scrollbar: true,
   });
 
   const contentBox = blessed.Text({
@@ -50,6 +52,10 @@ const tui = function(notes, query, sort, queryTag, includeHidden) {
     border: { type: 'line' },
     align: 'left',
     style: style(),
+    keys: true,
+    scrollable: true,
+    scrollbar: true,
+    mouse: true,
   });
 
   const updateListBox = function(query, sort) {

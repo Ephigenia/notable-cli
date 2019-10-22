@@ -1,13 +1,19 @@
 'use strict';
 
+const fg = 'grey';
+const active = 'blue';
+
 module.exports = function() {
   return {
-    fg: 'grey',
+    fg: fg,
     focus: {
       fg: 'white',
       border: {
-        fg: 'blue',
+        fg: active,
       },
-    }
+    },
+    scrollbar: {
+      bg: fg,
+    },
   };
 };
