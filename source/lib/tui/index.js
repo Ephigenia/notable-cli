@@ -1,7 +1,6 @@
 'use strict';
 
 const blessed = require('neo-blessed');
-const chalk = require('chalk');
 
 const style = require('./style');
 const data = require('./../data');
@@ -56,9 +55,19 @@ const tui = function(notes, query, sort, queryTag, includeHidden) {
   const updateListBox = function(query, sort) {
     shownNotes = notes.filter(note => data.filter.filter(note, query, queryTag, includeHidden));
     shownNotes.sort((a, b) => data.sort.sort(a, b, sort));
-    listBox.setLabel(`Notes sort by ${sort} ]`);
+    listBox.setLabel(`Notes (${shownNotes.length})`);
+    const DESC = ' ⬆';
+    const ASC = ' ⬇';
     listBox.setData(
-      [['Title','Tags', 'Created / Age']]
+      // Table Header
+      [[
+        'Title' + ((sort === '-title') ? DESC : ((sort === 'title') ? ASC : '')),
+        'Tags',
+        [
+          'Created' + ((sort === '-created' ? DESC : (sort === 'created' ? ASC : ''))),
+          'Age' + ((sort === '-modified' ? DESC : (sort === 'modified' ? ASC : ''))),
+        ].join(' / '),
+      ]]
       .concat(
         shownNotes.map(note => {
           const ageInDays = Math.round((Date.now() - note.metadata.created.getTime()) / 1000 / 3600 / 24);
