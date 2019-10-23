@@ -77,7 +77,7 @@ function main(title = TITLE_DEFAULT, tags = '') {
   // template
   const template = renderTemplate({
     tags,
-    title,
+    title: renderedTitle,
     username: config.USERNAME,
     created: now,
     modified: now
