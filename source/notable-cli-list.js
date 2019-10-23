@@ -34,7 +34,6 @@ function main(query = '') {
       if (program.interactive) {
         return tui(notes, query, program.sort, program.tag, program.all);
       }
-
       // filters the notes according to --search and --tag filter
       const shownNotes = notes.filter(note => data.filter.filter(note, query, program.tag, program.all));
       shownNotes.sort((a, b) => data.sort.sort(a, b, program.sort));

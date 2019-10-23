@@ -47,7 +47,6 @@ async function readNote(filename) {
     .then(note => {
       const basename = path.basename(filename);
       note.hidden = /^\./.test(basename);
-      note.hidden = !!Math.round(Math.random());
       note.filename = filename;
       note.metadata.title = note.metadata.title || path.basename(note.filename);
       note.metadata.tags = (note.metadata.tags || []);
