@@ -76,7 +76,8 @@ const tui = function(notes, query, sort, queryTag, includeHidden) {
       ]]
       .concat(
         shownNotes.map(note => {
-          const ageInDays = Math.round((Date.now() - note.metadata.created.getTime()) / 1000 / 3600 / 24);
+          const lastChange = note.metadata.modified || note.metadata.created;
+          const ageInDays = Math.round((Date.now() - lastChange.getTime()) / 1000 / 3600 / 24);
           return ([
             note.metadata.title,
             note.metadata.tags.join(', '),
