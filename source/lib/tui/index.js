@@ -64,27 +64,28 @@ const tui = function(notes, query, sort, queryTag, includeHidden) {
     listBox.setLabel(`Notes (${shownNotes.length})`);
     const DESC = ' ⬆';
     const ASC = ' ⬇';
-    listBox.setData(
-      // Table Header
-      [[
-        'Title' + ((sort === '-title') ? DESC : ((sort === 'title') ? ASC : '')),
-        'Tags',
-        [
-          'Created' + ((sort === '-created' ? DESC : (sort === 'created' ? ASC : ''))),
-          'Age' + ((sort === '-modified' ? DESC : (sort === 'modified' ? ASC : ''))),
-        ].join(' / '),
-      ]]
-      .concat(
-        shownNotes.map(note => {
-          const lastChange = note.metadata.modified || note.metadata.created;
-          const ageInDays = Math.round((Date.now() - lastChange.getTime()) / 1000 / 3600 / 24);
-          return ([
-            note.metadata.title,
-            note.metadata.tags.join(', '),
-            note.metadata.created.toJSON().replace(/T|:[0-9.]+Z$/g, ' ') + `/ ${ageInDays}`,
-          ]);
-        })
-      ));
+
+    const tableHeader = [[
+      'Title' + ((sort === '-title') ? DESC : ((sort === 'title') ? ASC : '')),
+      'Tags',
+      [
+        'Created' + ((sort === '-created' ? DESC : (sort === 'created' ? ASC : ''))),
+        'Age' + ((sort === '-modified' ? DESC : (sort === 'modified' ? ASC : ''))),
+      ].join(' / '),
+    ]];
+
+    const notesColumns = shownNotes.map((note) => {
+      const lastChange = note.metadata.modified || note.metadata.created;
+      const ageInDays = Math.round((Date.now() - lastChange.getTime()) / 1000 / 3600 / 24);
+      return ([
+        String(note.metadata.title) || '',
+        note.metadata.tags.join(', '),
+        note.metadata.created.toJSON().replace(/T|:[0-9.]+Z$/g, ' ') + `/ ${ageInDays}`,
+      ]);
+    });
+    const tableData = [].concat(tableHeader, notesColumns);
+
+    listBox.setData(tableData);
     screen.render();
   };
 

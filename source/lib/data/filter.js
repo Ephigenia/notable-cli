@@ -22,9 +22,9 @@ function filter(note, query = '', tags = null, showHidden = false) {
     if (
       note.metadata.tags.some(tag => regexp.test(tag)) ||
       regexp.test(note.metadata.title) ||
-      regexp.test(note.content ||
+      regexp.test(note.content) ||
       regexp.test(note.filename)
-    )) return true;
+    ) return true;
   }
 
   return false;
