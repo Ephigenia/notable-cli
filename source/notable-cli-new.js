@@ -102,8 +102,13 @@ function main(title = DEFAULT_TITLE, tags = '') {
     process.exit(1);
   }
 
+  let templateSource = DEFAULT_TEMPLATE;
+  if (process.stdin.isTTY === undefined) {
+    templateSource = fs.readFileSync("/dev/stdin", "utf-8");
+  }
+
   // template
-  const content = renderTemplate(DEFAULT_TEMPLATE, {
+  const content = renderTemplate(templateSource, {
     created: now,
     modified: now,
     tags,
