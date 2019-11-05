@@ -3,8 +3,9 @@
 
 const program = require('commander');
 const fs = require('fs');
-const fsPromises = fs.promises;
+const Handlebars = require('handlebars');
 const path = require('path');
+const moment = require('moment');
 
 const data = require('./lib/data');
 const pkg = require('./../package.json');
@@ -19,35 +20,59 @@ program
   .arguments('[title] [tags]')
   ;
 
-const TITLE_DEFAULT = 'YYYYMMDD-HHMM Note';
+const DEFAULT_TITLE = 'YYYYMMDD-HHMM Note';
 
-function renderTemplate(vars = {}) {
-  vars.title = vars.title || 'no-title';
-  const content = `---
-tags: [${vars.tags.join(', ')}]
-title: ${vars.title}
-author: ${vars.username}
-created: '${vars.created.toISOString()}'
-modified: '${vars.modified.toISOString()}'
+const DEFAULT_TEMPLATE = `---
+tags: [{{ join tags }}]
+title: {{ title }}
+author: {{ username }}
+created: '{{ format created }}'
+modified: '{{ format modified }}'
 ---
 
-# ${vars.title}
+# {{ title }}
 `;
-  return content;
+
+/**
+ * Renders the vars into the source template using handlebars
+ *
+ * @param {string} source
+ * @param {object<string, any>} data
+ */
+function renderTemplate(source = DEFAULT_TEMPLATE, data = {}) {
+  Handlebars.registerHelper('join', (input, separator = ',') => {
+    const str = input.join(separator);
+    return new Handlebars.SafeString(str);
+  });
+  Handlebars.registerHelper('toISOString', (input) => {
+    return new Handlebars.SafeString(input.toISOString());
+  });
+  Handlebars.registerHelper('format', (input, format) => {
+    if (typeof format === 'string') {
+      return new Handlebars.SafeString(moment(input).format(format));
+    } else {
+      return new Handlebars.SafeString(input.toISOString());
+    }
+  });
+  const template = Handlebars.compile(source);
+  // add default variable values
+  const vars = Object.assign(data, {});
+  return template(vars);
 }
 
-function main(title = TITLE_DEFAULT, tags = '') {
+
+function main(title = DEFAULT_TITLE, tags = '') {
   const now = new Date();
 
   // argument defaults and validation
-  const renderedTitle = (title || TITLE_DEFAULT)
+  const renderedTitle = (title || DEFAULT_TITLE)
     .replace(/YYYY-MM-DD/i, now.toISOString().substr(0, 10))
     .replace(/YYYYMMDD/i, now.toISOString().substr(0, 10).replace(/-/g, ''))
     .replace(/HH-MM/i, now.toISOString().substr(11, 5).replace(/:/g, '-'))
     .replace(/HHMM/i, now.toISOString().substr(11, 5).replace(/:/g, ''));
 
   // sanitize tags (trim), remove empty ones
-  tags = tags.split(/\s+[,;]+\s*/).map(tag => tag.trim()).filter(v => v);
+  tags = tags.split(/\s*[,;]+\s*/gi).map(tag => tag.trim()).filter(v => v);
 
   // filename
   const basename = renderedTitle;
@@ -78,15 +103,15 @@ function main(title = TITLE_DEFAULT, tags = '') {
   }
 
   // template
-  const template = renderTemplate({
+  const content = renderTemplate(DEFAULT_TEMPLATE, {
+    created: now,
+    modified: now,
     tags,
     title: renderedTitle,
     username: config.USERNAME,
-    created: now,
-    modified: now
   });
 
-  fs.writeFileSync(filename, template);
+  fs.writeFileSync(filename, content);
   data.open([filename]);
 }
 
