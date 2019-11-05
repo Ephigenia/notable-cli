@@ -3,6 +3,7 @@
 
 const program = require('commander');
 const fs = require('fs');
+const fsPromises = fs.promises;
 const path = require('path');
 
 const data = require('./lib/data');
@@ -50,24 +51,26 @@ function main(title = TITLE_DEFAULT, tags = '') {
 
   // filename
   const basename = renderedTitle;
-  const filename = path.join(config.HOME_PATH, basename) + '.md';
+  const directory = path.join(config.HOME_PATH, path.dirname(basename));
+  const filename = path.join(directory, path.basename(basename)) + '.md';
+
   try {
     // check if title doesn’t contain a dot as first character or slashes
     if (basename.match(/^\./)) {
       throw new Error(
         'The given title would result in a hidden file starting with a dot.'
       );
-    } else if (basename.match(/\/|\\/)) {
-      throw new Error(
-        'The given title would result in a filename that contains backslash ' +
-        'or slashes which is not allowed right now.'
-      );
-    } else if (fs.existsSync(filename)) {
+    }
+    if (fs.existsSync(filename)) {
       // check if file already exists
       throw new Error(
         `The file "${filename}" already exists and cannot be overwritten. ` +
         'Considering modifying this note instead'
       );
+    }
+    if (title.match(/\//)) {
+      // create sub-directory when the title contains slashes
+      fs.mkdirSync(directory, { recursive: true });
     }
   } catch (err) {
     console.error(err.message);
