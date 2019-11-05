@@ -77,10 +77,11 @@ const tui = function(notes, query, sort, queryTag, includeHidden) {
     const notesColumns = shownNotes.map((note) => {
       const lastChange = note.metadata.modified || note.metadata.created;
       const ageInDays = Math.round((Date.now() - lastChange.getTime()) / 1000 / 3600 / 24);
+      const date = note.metadata.created.toJSON().replace(/T|:[0-9.]+Z$/g, ' ');
       return ([
         String(note.metadata.title) || '',
         note.metadata.tags.join(', '),
-        note.metadata.created.toJSON().replace(/T|:[0-9.]+Z$/g, ' ') + `/ ${ageInDays}`,
+        `${date} / ${ageInDays}`,
       ]);
     });
     const tableData = [].concat(tableHeader, notesColumns);

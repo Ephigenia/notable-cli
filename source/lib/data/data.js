@@ -49,15 +49,21 @@ async function readNote(filename) {
       note.hidden = /^\./.test(basename);
       note.filename = filename;
       note.metadata.title = note.metadata.title || path.basename(note.filename);
-      note.metadata.tags = (note.metadata.tags || []);
+      note.metadata.tags = (note.metadata.tags || []).filter(tag => typeof(tag) === 'string');
       // sort the tags alphabetically
-      if (note.metadata.tags) {
-        note.metadata.tags.sort((a, b) => {
-          return a.localeCompare(b);
-        });
+      if (note.metadata.tags) note.metadata.tags.sort((a, b) => {
+        return a.localeCompare(b);
+      });
+      // fallback to file creation data when metadata is empty
+      const { ctime, mtime } = fs.statSync(note.filename);
+      note.metadata.created = ctime;
+      if (note.metadata.created) {
+        note.metadata.created = new Date(note.metadata.created);
       }
-      note.metadata.created = new Date(note.metadata.created);
       note.metadata.modified = new Date(note.metadata.modified);
+      if (String(note.metadata.modified) === 'Invalid Date') {
+        note.metadata.modified = mtime;
+      }
       return note;
     });
 }
@@ -68,9 +74,7 @@ async function readNote(filename) {
  */
 async function read(path) {
   return recursiveReadDirP(path, [fileFilter])
-    .then(files => {
-      return Promise.all(files.map(readNote));
-    });
+    .then(files => Promise.all(files.map(readNote)));
 }
 
 
