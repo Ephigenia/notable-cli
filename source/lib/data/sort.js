@@ -24,8 +24,6 @@ function sort(a, b, field) {
   switch(sort) {
     case 'created':
       return modifier(a.metadata.created - b.metadata.created);
-    case 'filename':
-      return modifier(a.metadata.title.localeCompare(b.metadata.title));
     case 'modified':
       return modifier(a.metadata.modified - b.metadata.modified);
     case 'title':

@@ -46,7 +46,7 @@ async function readNote(filename) {
       const basename = path.basename(filename);
       note.hidden = /^\./.test(basename);
       note.filename = filename;
-      note.metadata.title = note.metadata.title || path.basename(note.filename);
+      note.metadata.title = String(note.metadata.title || path.basename(note.filename));
       note.metadata.tags = (note.metadata.tags || []).filter(tag => typeof(tag) === 'string');
       // sort the tags alphabetically
       if (note.metadata.tags) note.metadata.tags.sort((a, b) => {
