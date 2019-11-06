@@ -23,7 +23,7 @@ program
 const DEFAULT_TITLE = 'YYYYMMDD-HHMM Note';
 
 const DEFAULT_TEMPLATE = `---
-tags: [{{ join tags }}]
+tags: [{{ tags }}]
 title: {{ title }}
 author: {{ username }}
 created: '{{ format created }}'
@@ -40,10 +40,6 @@ modified: '{{ format modified }}'
  * @param {object<string, any>} data
  */
 function renderTemplate(source = DEFAULT_TEMPLATE, data = {}) {
-  Handlebars.registerHelper('join', (input, separator = ',') => {
-    const str = input.join(separator);
-    return new Handlebars.SafeString(str);
-  });
   Handlebars.registerHelper('toISOString', (input) => {
     return new Handlebars.SafeString(input.toISOString());
   });
