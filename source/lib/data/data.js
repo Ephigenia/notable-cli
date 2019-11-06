@@ -41,9 +41,7 @@ function fileFilter(file, stats) {
  */
 async function readNote(filename) {
   return readFileP(filename, 'utf8')
-    .then(content => {
-      return parseMD(content);
-    })
+    .then(content => parseMD(content))
     .then(note => {
       const basename = path.basename(filename);
       note.hidden = /^\./.test(basename);
@@ -65,6 +63,10 @@ async function readNote(filename) {
         note.metadata.modified = mtime;
       }
       return note;
+    })
+    .catch(err => {
+      console.error(`Error while reading "${filename}": ${err.message}`);
+      throw err;
     });
 }
 
