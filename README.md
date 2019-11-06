@@ -5,7 +5,7 @@ Package is still in development and testing. There may be breaking changes.
 Features
 ===============================================================================
 
-- Create new notes using templates 
+- Create new notes using templates
 - Read from storage and search, filter and list notes
 - List tags
 - configurable storage directory
@@ -64,11 +64,52 @@ Same thing can be archived by:
 
 ## Interactive Mode
 
-The interactive mode starts a [neo-blessed](https://github.com/embark-framework/neo-blessed) powered interactive cli inerface that allows you to list all the notes, tags and creation date while entering a search query on top and preview the notes as soon as there’s one selected in the list:
+The interactive mode starts a [neo-blessed](https://github.com/embark-framework/neo-blessed) powered interactive cli inerface that allows you to list all the notes, tags and creation/modified date while entering a search query on top and preview the notes as soon as there’s one selected in the list:
 
     notable-cli --interactive
 
-TODOC: describe usage & keys
+### Panes
+
+There are 3 panes, search input, list of notes and a note-preview which shows the currently selected note:
+
+    ┌─Search──────────────────────────────────────────────────────────────────────────────────────────┐
+    │ Notable                                                                                         │
+    └─────────────────────────────────────────────────────────────────────────────────────────────────┘
+    ┌──Notes (1)────────┬──────────────────────────────────┬──────────────────────────────────────────┐
+    │ Title             │ Tags                             │ Created ⬆ / Age                          │
+    │ Notable-Cli Ideas │ Ideas, Note, Project/Notable-CLI │ 2019-11-04 07:56  / 6                    │
+    │                   │                                  │                                          │
+    │                   │                                  │                                          │
+    │                   │                                  │                                          │
+    │                   │                                  │                                          │
+    │                   │                                  │                                          │
+    │                   │                                  │                                          │
+    │                   │                                  │                                          │
+    │                   │                                  │                                          │
+    └───────────────────┴──────────────────────────────────┴──────────────────────────────────────────┘
+    ┌──/Users/ephigenia/Google Drive File Stream/Meine Ablage/Notable/notes/Notable-Cli Ideas.md──────┐
+    │                                                                                                 │
+    │ # Notable-Cli Ideas                                                                             │
+    │                                                                                                 │
+    │ ### Roadmap                                                                                     │
+    │                                                                                                 │
+    │ ## Questions / Problems                                                                         │
+    │                                                                                                 │
+    │     * when and how to update modified date                                                      │
+    │                                                                                                 │
+    │ ## Later Versions                                                                               │
+    │                                                                                                 │
+    │     * tag batch editing / removing / adding / renaming                                          │
+    │                                                                                                 │
+    └─────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+### Key-Bindings
+
+- `<tab>` or `<shift>-<tab>` - focus on next or previous pane
+- `f` - focus on text input search for fast searching notes
+- `o` - open the currently selected note in the editor
+- `q`, `<esc>`, `<ctrl>-c` - quit the application
+- `s` or `S` - switch to next or previous sorting direction
 
 ## Full output
 
@@ -94,19 +135,37 @@ Creating new notes accepts the title of the note as first argument and tags as C
 
 This will create and emmidiently open new note with the current date + "-Standup" as title using the Tags "Project/MyProject", "Standup" and "Note".
 
+## New Notes in Sub-Directories
+
+When the title of the note contains slashes it will be saved in a sub-directory of the home directory.
+
+    notable-cli new Project/Open-Source/YYYYMMDD-Note 
+
+Will create a new file in the "Project/Open-Source/" directory. If that directory doesn’t exist it will get created.
+
 ## Templates
 
-TBD there will be templates that can be used
+You can pipe in a file’s content or the template directly to `notable-cli new` to get it used as template. The content will be handled as [handlebars](https://handlebarsjs.com/) template.
+
+Using a template:
+
+    cat templates/daily.md | notable-cli new YYYYMMDD-Note
+
+Using a template string
+
+    echo "my new note created by {{username}}" | notable-cli new YYYYMMDD-Note
 
 ## Template variables
 
-| name     | value |
-| -------- | ----- |
+| name           | value |
+| --------       | ----- |
 | `{{created}}`  | ISO string when the file was created |
 | `{{modified}}` | ISO string when the file was modified |
 | `{{tags}}`     | csv list of tags |
 | `{{title}}`    | title of the file |
 | `{{username}}` | current username |
+
+There’s also a "format" helper which can be used to add formatted english dates. F.e. if you use `{{ format created 'YYYY-MM-DD' }}` then it will add this date string at the position in the template
 
 
 Other Projects
