@@ -54,14 +54,16 @@ async function readNote(filename) {
       });
       // fallback to file creation data when metadata is empty
       const { ctime, mtime } = fs.statSync(note.filename);
-      note.metadata.created = ctime;
       if (note.metadata.created) {
         note.metadata.created = new Date(note.metadata.created);
+      } else {
+        note.metadata.created = ctime;
       }
       note.metadata.modified = new Date(note.metadata.modified);
-      if (String(note.metadata.modified) === 'Invalid Date') {
+        if (String(note.metadata.modified) === 'Invalid Date') {
         note.metadata.modified = mtime;
       }
+      console.log(filename, note.metadata.created);
       return note;
     })
     .catch(err => {
