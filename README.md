@@ -1,33 +1,50 @@
 Simple to use jekyll-markdown parsing note-taking app for the command line and your favorite editor and unix tools.
 
-Package is still in development and testing. There may be breaking changes.
+**Package is still in development and testing. There may be breaking changes.**
+
 
 Features
 ===============================================================================
 
-- Create new notes using templates
-- Read from storage and search, filter and list notes
+- Create, edit, manage and search text-based notes using markdown
+- Read from single flexible storage directory, search, filter and list notes
 - List tags
-- configurable storage directory
+- Use your standard vavorite $EDITOR to edit notes
 
-- compatible with "notes" created with [notable](https://notable.md)
+- compatible with "notes" created with [notable](https://notable.md) or [notes-cli](https://github.com/rhysd/notes-cli)
+
+Other ideas & planned features can be found in the [wiki](./wiki). If something doesn’t work please [create a new issue](https://github.com/Ephigenia/notable-cli/issues).
+
+
+Installation
+===============================================================================
+
+    npm install -g notable-cli
+
+Or use it directly using `npx`:
+
+    npx notable-cli
+
+Please note that all examples in this README.md assume that you have installed notable-cli globally. If not, just replace the `notable-cli` call with `npx notable-cli` and you’re fine.
 
 
 Configuration
 ===============================================================================
 
-The cli searches for not-hidden markdown files ending with `.md` in the notebooks directory which must be set in environment variable: `NOTABLE_CLI_HOME`.
+The cli searches for not-hidden markdown files ending with `.md` in the notebooks home directory which must be set in environment variable: `NOTABLE_CLI_HOME`.
 
 You can set this by exporting it or setting it in your `.bash_profile`:
 
     export NOTABLE_CLI_HOME=~/Notes
 
+If `NOTABLE_CLI_HOME` isn’t defined, it checks for `NOTES_CLI_HOME` or `NOTES_CLI_HOME`.
 
-Examples
+
+Usage
 ===============================================================================
 
-## List Notes
-
+List Notes
+-------------------------------------------------------------------------------
 Listing all notes in column output with creation data, title and tags:
 
     notable-cli list --oneline
@@ -62,11 +79,15 @@ Same thing can be archived by:
 
     notable-cli list --editor
 
-## Interactive Mode
-
-The interactive mode starts a [neo-blessed](https://github.com/embark-framework/neo-blessed) powered interactive cli inerface that allows you to list all the notes, tags and creation/modified date while entering a search query on top and preview the notes as soon as there’s one selected in the list:
+Text-Based User Interface ([TUI](https://en.wikipedia.org/wiki/Text-based_user_interface))
+-------------------------------------------------------------------------------
+The interactive text-mode interface a [neo-blessed](https://github.com/embark-framework/neo-blessed) powered interactive cli inerface that allows you to list all the notes, tags and creation/modified date while entering a search query on top and preview the notes as soon as there’s one selected in the list:
 
     notable-cli --interactive
+
+It can also get combined with other arguments like searching or filtering by tags:
+    
+    notable-cli --tags Project/IKEA --interactive
 
 ### Panes
 
@@ -121,14 +142,16 @@ Use `less` for paging through the output:
 
     notable-cli list Standup --full | less
 
-## Tag
 
+Tags
+-------------------------------------------------------------------------------
 List all tags
 
     notable-cli tags
 
-## New Notes
 
+New Notes
+-------------------------------------------------------------------------------
 Creating new notes accepts the title of the note as first argument and tags as CSV list as the second argument. It will create a file using the title which renderes a template that contain a list of template variables.
 
     notable-cli new YYYYMMDD-Standup Project/MyProject,Standup,Note
@@ -145,11 +168,11 @@ Will create a new file in the "Project/Open-Source/" directory. If that director
 
 ## Templates
 
-You can pipe in a file’s content or the template directly to `notable-cli new` to get it used as template. The content will be handled as [handlebars](https://handlebarsjs.com/) template.
+You can pipe in a file’s content or the template string directly to `notable-cli new` to get it used as template. The content will be handled as [handlebars](https://handlebarsjs.com/) template.
 
 Using a template:
 
-    cat templates/daily.md | notable-cli new YYYYMMDD-Note
+    cat templates/daily.template.md | notable-cli new YYYYMMDD-Note
 
 Using a template string
 
@@ -165,12 +188,12 @@ Using a template string
 | `{{title}}`    | title of the file |
 | `{{username}}` | current username |
 
-There’s also a "format" helper which can be used to add formatted english dates. F.e. if you use `{{ format created 'YYYY-MM-DD' }}` then it will add this date string at the position in the template
+There’s also a "format" helper which can be used to add formatted english dates. F.e. if you use `{{ format created 'YYYY-MM-DD' }}` then it will add this date string at the position in the template.
 
 
 Other Projects
 ===============================================================================
-List of other projects that use similar markdown syntax or features.
+List of other, alternate or compatible, inspiring projects that use similar markdown syntax or features.
 
-- https://notable.md
-- https://github.com/rhysd/notes-cli
+- [notable](https://notable.md)
+- [notes-cli](https://github.com/rhysd/notes-cli)

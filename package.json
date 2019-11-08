@@ -47,6 +47,7 @@
     "lint": "eslint source",
     "start": "node $npm_package_main",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "test:outdated": "npm outdated",
     "version:recommend": "conventional-recommended-bump --preset angular",
     "version": "npm run changelog && git add CHANGELOG.md"
   },
@@ -54,8 +55,6 @@
     "chalk": "^2.4.2",
     "columnify": "^1.5.4",
     "commander": "^3.0.2",
-    "conventional-changelog-cli": "^2.0.25",
-    "conventional-recommended-bump": "^6.0.2",
     "eslint": "^6.5.1",
     "handlebars": "^4.5.1",
     "marked": "^0.7.0",
@@ -64,5 +63,9 @@
     "neo-blessed": "^0.2.0",
     "parse-md": "^2.0.2",
     "recursive-readdir": "^2.2.2"
+  },
+  "devDependencies": {
+    "conventional-changelog-cli": "^2.0.25",
+    "conventional-recommended-bump": "^6.0.2"
   }
 }
