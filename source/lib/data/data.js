@@ -63,7 +63,6 @@ async function readNote(filename) {
         if (String(note.metadata.modified) === 'Invalid Date') {
         note.metadata.modified = mtime;
       }
-      console.log(filename, note.metadata.created);
       return note;
     })
     .catch(err => {
