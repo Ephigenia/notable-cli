@@ -45,9 +45,13 @@
     "changelog": "conventional-changelog -s -i CHANGELOG.md -p angular -r 0",
     "lint:fix": "npm run lint -- --fix",
     "lint": "eslint source",
+    "postversion": "git push && git push --tags",
+    "preversion": "npm test && npm run lint && npm run test:outdated",
     "start": "node $npm_package_main",
     "test": "echo \"Error: no test specified\" && exit 1",
     "test:outdated": "npm outdated",
+    "test:security": "npm audit",
+    "update": "npx npm-check --update",
     "version:recommend": "conventional-recommended-bump --preset angular",
     "version": "npm run changelog && git add CHANGELOG.md"
   },
@@ -55,7 +59,6 @@
     "chalk": "^2.4.2",
     "columnify": "^1.5.4",
     "commander": "^3.0.2",
-    "eslint": "^6.5.1",
     "handlebars": "^4.5.1",
     "marked": "^0.7.0",
     "marked-terminal": "^3.3.0",
@@ -65,7 +68,13 @@
     "recursive-readdir": "^2.2.2"
   },
   "devDependencies": {
+    "chai": "^4.2.0",
     "conventional-changelog-cli": "^2.0.25",
-    "conventional-recommended-bump": "^6.0.2"
+    "conventional-recommended-bump": "^6.0.2",
+    "eslint": "^6.5.1",
+    "mocha": "^6.2.2"
+  },
+  "optionalDependencies": {
+    "npm-check": "^5.9.0"
   }
 }
