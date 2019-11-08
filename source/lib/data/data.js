@@ -53,12 +53,12 @@ async function readNote(filename) {
         return a.localeCompare(b);
       });
       // fallback to file creation data when metadata is empty
-      const { ctime, mtime } = fs.statSync(note.filename);
+      const { mtime, birthtime } = fs.statSync(note.filename);
       if (note.metadata.created) {
         note.metadata.created = new Date(note.metadata.created);
       }
       if (!note.metadata.created || String(note.metadata.created) === 'Invalid Date') {
-        note.metadata.created = ctime;
+        note.metadata.created = birthtime;
       }
       note.metadata.modified = new Date(note.metadata.modified);
       if (!note.metadata.modified || String(note.metadata.modified) === 'Invalid Date') {
