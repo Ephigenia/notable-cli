@@ -56,11 +56,12 @@ async function readNote(filename) {
       const { ctime, mtime } = fs.statSync(note.filename);
       if (note.metadata.created) {
         note.metadata.created = new Date(note.metadata.created);
-      } else {
+      }
+      if (!note.metadata.created || String(note.metadata.created) === 'Invalid Date') {
         note.metadata.created = ctime;
       }
       note.metadata.modified = new Date(note.metadata.modified);
-        if (String(note.metadata.modified) === 'Invalid Date') {
+      if (!note.metadata.modified || String(note.metadata.modified) === 'Invalid Date') {
         note.metadata.modified = mtime;
       }
       return note;
