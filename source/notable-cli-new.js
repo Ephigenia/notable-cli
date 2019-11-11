@@ -108,7 +108,7 @@ function main(title = DEFAULT_TITLE, tags = '') {
     created: now,
     modified: now,
     tags,
-    title: renderedTitle,
+    title: renderedTitle.split('/').pop(),
     username: config.USERNAME,
   });
 
