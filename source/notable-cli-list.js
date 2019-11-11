@@ -18,7 +18,7 @@ program
   })
   .option('-e, --editor', 'open editor with resulting filtered notes')
   .option('-f, --full', 'full output', false)
-  .option('-i, --interactive', 'interactive selection/preview while searching for note', false)
+  .option('-i, --interactive', 'interactive text-based interface (tui)', false)
   .option('-j, --json', 'json output', false)
   .option('-o, --oneline', 'one-line output', false)
   .option('-s, --sort <criteria>', 'sorting', '-created')

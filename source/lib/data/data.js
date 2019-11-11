@@ -47,11 +47,17 @@ async function readNote(filename) {
       note.hidden = /^\./.test(basename);
       note.filename = filename;
       note.metadata.title = String(note.metadata.title || path.basename(note.filename));
-      note.metadata.tags = (note.metadata.tags || []).filter(tag => typeof(tag) === 'string');
-      // sort the tags alphabetically
-      if (note.metadata.tags) note.metadata.tags.sort((a, b) => {
+
+      // create unique value set of tags
+      let tags = new Set(note.metadata.tags || [])
+      // sort the tags alphabetically while removing empty values
+      note.metadata.tags = Array.from(tags)
+        .filter(tag => tag)
+        .filter(tag => typeof(tag) === 'string');
+      note.metadata.tags.sort((a, b) => {
         return a.localeCompare(b);
       });
+
       // fallback to file creation data when metadata is empty
       const { mtime, birthtime } = fs.statSync(note.filename);
       if (note.metadata.created) {
