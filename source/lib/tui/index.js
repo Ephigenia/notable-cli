@@ -74,6 +74,7 @@ const tui = function(notes, query, sort, queryTag, includeHidden) {
       ].join(' / '),
     ]];
 
+
     const notesColumns = shownNotes.map((note) => {
       const lastChange = note.metadata.modified || note.metadata.created;
       const ageInDays = Math.round((Date.now() - lastChange.getTime()) / 1000 / 3600 / 24);
@@ -84,7 +85,26 @@ const tui = function(notes, query, sort, queryTag, includeHidden) {
         `${date} / ${ageInDays}`,
       ]);
     });
-    const tableData = [].concat(tableHeader, notesColumns);
+    let tableData = [].concat(tableHeader, notesColumns);
+
+    const COLS = process.stdout.columns;
+    const lastColumnWidth = 24;
+    const colWidths = [
+      Math.round((COLS - lastColumnWidth) * 0.35),
+      Math.round((COLS - lastColumnWidth) * 0.55),
+      lastColumnWidth,
+    ];
+
+    // TableList doesn’t add line breaks for auto-breaking too long values
+    // in a table column
+    // automatically limit the lines to the column widths if they are longer
+    tableData = tableData.map((row) => row.map((columnValue, columnIndex) => {
+      const columnWidth = colWidths[columnIndex];
+      if (columnValue.length > columnWidth) {
+        return columnValue.substr(0, columnWidth - 1) + '…';
+      }
+      return columnValue;
+    }));
 
     listBox.setData(tableData);
     screen.render();
