@@ -50,6 +50,9 @@ async function readNote(filename) {
 
       // create unique value set of tags
       let tags = new Set(note.metadata.tags || [])
+      // use sub directory as tags
+      path.dirname(filename).split(path.sep).map(tags.add.bind(tags));
+
       // sort the tags alphabetically while removing empty values
       note.metadata.tags = Array.from(tags)
         .filter(tag => tag)
