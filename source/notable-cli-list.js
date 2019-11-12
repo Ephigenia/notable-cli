@@ -29,6 +29,12 @@ program
   ;
 
 function main(query = '') {
+  // start interactive mode
+  if (program.interactive) {
+    return tui(config.HOME_PATH, query, program.sort, program.tag, program.all);
+  }
+
+  // normal one-time execution mode
   return data.readFromPath(config.HOME_PATH)
     .then(notes => {
       if (program.interactive) {

@@ -127,6 +127,7 @@ There are 3 panes, search input, list of notes and a note-preview which shows th
 ### Key-Bindings
 
 - `<tab>` or `<shift>-<tab>` - focus on next or previous pane
+- `r` - reload data from directory
 - `f` - focus on text input search for fast searching notes
 - `o` - open the currently selected note in the editor
 - `q`, `<esc>`, `<ctrl>-c` - quit the application

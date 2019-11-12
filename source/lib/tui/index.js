@@ -5,9 +5,11 @@ const blessed = require('neo-blessed');
 const style = require('./style');
 const data = require('./../data');
 
-const tui = function(notes, query, sort, queryTag, includeHidden) {
+const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
   let shownNotes = [];
 
+  // view elements
+  // -------------
   const screen = blessed.screen({
     smartCSR: true,
     sendFocus: true,
@@ -58,10 +60,20 @@ const tui = function(notes, query, sort, queryTag, includeHidden) {
     mouse: true,
   });
 
-  const updateListBox = function(query, sort) {
+  let notes = [];
+  const reloadData = function(query, sort) {
+    return data.readFromPath(notesHomePath)
+      .then(list => notes = list)
+      .then(() => updateViews(query, sort));
+  };
+
+  const updateViews = async function(query, sort) {
     shownNotes = notes.filter(note => data.filter.filter(note, query, queryTag, includeHidden));
     shownNotes.sort((a, b) => data.sort.sort(a, b, sort));
-    listBox.setLabel(`Notes (${shownNotes.length})`);
+    updateListBox(shownNotes, sort);
+  };
+
+  const listBoxTableheader = function(sort) {
     const DESC = ' ⬆';
     const ASC = ' ⬇';
 
@@ -73,19 +85,26 @@ const tui = function(notes, query, sort, queryTag, includeHidden) {
         'Age' + ((sort === '-modified' ? DESC : (sort === 'modified' ? ASC : ''))),
       ].join(' / '),
     ]];
+    return tableHeader;
+  };
 
+  const listBoxNoteRow = function(note) {
+    const lastChange = note.metadata.modified || note.metadata.created;
+    const ageInDays = Math.round((Date.now() - lastChange.getTime()) / 1000 / 3600 / 24);
+    const date = note.metadata.created.toJSON().replace(/T|:[0-9.]+Z$/g, ' ').trim();
+    return ([
+      String(note.metadata.title) || '',
+      note.metadata.tags.join(', '),
+      `${date} / ${ageInDays}`,
+    ]);
+  };
 
-    const notesColumns = shownNotes.map((note) => {
-      const lastChange = note.metadata.modified || note.metadata.created;
-      const ageInDays = Math.round((Date.now() - lastChange.getTime()) / 1000 / 3600 / 24);
-      const date = note.metadata.created.toJSON().replace(/T|:[0-9.]+Z$/g, ' ').trim();
-      return ([
-        String(note.metadata.title) || '',
-        note.metadata.tags.join(', '),
-        `${date} / ${ageInDays}`,
-      ]);
-    });
-    let tableData = [].concat(tableHeader, notesColumns);
+  const updateListBox = function(notes, sort) {
+    listBox.setLabel(`Notes (${notes.length})`);
+
+    const header = listBoxTableheader(sort);
+    const list = notes.map((note) => listBoxNoteRow(note));
+    let table = [].concat(header, list);
 
     const COLS = process.stdout.columns;
     const lastColumnWidth = 24;
@@ -98,7 +117,7 @@ const tui = function(notes, query, sort, queryTag, includeHidden) {
     // TableList doesn’t add line breaks for auto-breaking too long values
     // in a table column
     // automatically limit the lines to the column widths if they are longer
-    tableData = tableData.map((row) => row.map((columnValue, columnIndex) => {
+    table = table.map((row) => row.map((columnValue, columnIndex) => {
       const columnWidth = colWidths[columnIndex];
       if (columnValue.length > columnWidth) {
         return columnValue.substr(0, columnWidth - 1) + '…';
@@ -106,7 +125,7 @@ const tui = function(notes, query, sort, queryTag, includeHidden) {
       return columnValue;
     }));
 
-    listBox.setData(tableData);
+    listBox.setData(table);
     screen.render();
   };
 
@@ -130,57 +149,71 @@ const tui = function(notes, query, sort, queryTag, includeHidden) {
     }
   });
 
-  // watch for changes in the search box and filter the results
+  function setSortOrder(index) {
+    if (index >= data.sort.options.length) {
+      index = 0;
+    }
+    if (index < 0) {
+      index = data.sort.options.length - 1;
+    }
+    sort = data.sort.options[index];
+    updateViews();
+  }
+
+  // keyboard control
+  // ----------------
+  screen.key(['s'], () => {
+    // previous sort order
+    setSortOrder(data.sort.options.indexOf(sort) + 1);
+  });
+  screen.key(['S'], () => {
+    // next sort order
+    setSortOrder(data.sort.options.indexOf(sort) - 1);
+  });
+  screen.key(['r'], () => {
+    // reload data
+    reloadData(query, sort);
+  });
+  screen.key(['f', '/'], () => {
+    // jump to search when f or / is pressed
+    searchBox.focus();
+    searchBox.readInput();
+  });
+  searchBox.key(['down'], () => {
+    // focus on list
+    listBox.focus();
+  });
+  screen.key(['tab'], () => {
+    // focus previous pane
+    screen.focusNext();
+  });
+  screen.key(['shift-tab'], () => {
+    // focus next pane
+    screen.focusPrevious();
+  });
+  screen.key(['escape', 'C-c', 'q'], function() {
+    // quit application
+    return process.exit(0);
+  });
+
+  // update interval
+  // ----------------
+  // refresh interval which updates the list of notes every n seconds
   let lastValue;
   setInterval(() => {
     const query = searchBox.value;
+    // only update when query changed
     if (lastValue !== query) {
-      updateListBox(query, sort);
+      updateViews(query, sort);
       lastValue = query;
     }
   }, 1000);
 
-  // switch between screen elements using TAB and Shift-TAB
-  searchBox.key(['down'], () => {
-    listBox.focus();
-  });
-
-  // change sort order
-  screen.key(['s'], () => {
-    const currentIndex = data.sort.options.indexOf(sort);
-    let nextIndex = currentIndex + 1;
-    if (nextIndex >= data.sort.options.length) {
-      nextIndex = 0;
-    }
-    sort = data.sort.options[nextIndex];
-    updateListBox(query, sort);
-  });
-  screen.key(['S'], () => {
-    const currentIndex = data.sort.options.indexOf(sort);
-    let nextIndex = currentIndex - 1;
-    if (nextIndex < 0) {
-      nextIndex = data.sort.options.length - 1;
-    }
-    sort = data.sort.options[nextIndex];
-    updateListBox(query, sort);
-  });
-
-  // jump to search when f or / is pressed
-  screen.key(['f', '/'], () => {
-    searchBox.focus();
-    searchBox.readInput();
-  });
-  screen.key(['tab'], () => screen.focusNext());
-  screen.key(['shift-tab'], () => screen.focusPrevious());
-  // make it possible to exit
-  screen.key(['escape', 'C-c', 'q'], function() {
-    return process.exit(0);
-  });
-
+  // initial load
+  // ------------
   searchBox.focus();
-  updateListBox(query, sort);
+  reloadData(query, sort);
   screen.render();
-
 };
 
 module.exports = tui;
