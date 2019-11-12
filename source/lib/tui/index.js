@@ -6,8 +6,6 @@ const style = require('./style');
 const data = require('./../data');
 
 const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
-  let shownNotes = [];
-
   // view elements
   // -------------
   const screen = blessed.screen({
@@ -61,6 +59,7 @@ const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
   });
 
   let notes = [];
+  let shownNotes = [];
   const reloadData = function(query, sort) {
     return data.readFromPath(notesHomePath)
       .then(list => notes = list)
@@ -76,7 +75,6 @@ const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
   const listBoxTableheader = function(sort) {
     const DESC = ' ⬆';
     const ASC = ' ⬇';
-
     const tableHeader = [[
       'Title' + ((sort === '-title') ? DESC : ((sort === 'title') ? ASC : '')),
       'Tags',
@@ -102,9 +100,10 @@ const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
   const updateListBox = function(notes, sort) {
     listBox.setLabel(`Notes (${notes.length})`);
 
-    const header = listBoxTableheader(sort);
-    const list = notes.map((note) => listBoxNoteRow(note));
-    let table = [].concat(header, list);
+    let table = [].concat(
+      listBoxTableheader(sort),
+      notes.map(note => listBoxNoteRow(note)),
+    );
 
     const COLS = process.stdout.columns;
     const lastColumnWidth = 24;
@@ -114,13 +113,14 @@ const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
       lastColumnWidth,
     ];
 
+    const ELLIPSIS = '…';
     // TableList doesn’t add line breaks for auto-breaking too long values
     // in a table column
     // automatically limit the lines to the column widths if they are longer
     table = table.map((row) => row.map((columnValue, columnIndex) => {
       const columnWidth = colWidths[columnIndex];
       if (columnValue.length > columnWidth) {
-        return columnValue.substr(0, columnWidth - 1) + '…';
+        return columnValue.substr(0, columnWidth - 1) + ELLIPSIS;
       }
       return columnValue;
     }));
@@ -129,39 +129,52 @@ const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
     screen.render();
   };
 
+  function setSortOrder(index) {
+    const sortOptions = data.sort.options;
+    if (index >= sortOptions.length) {
+      index = 0;
+    } else if (index < 0) {
+      index = sortOptions.length - 1;
+    }
+    sort = sortOptions[index];
+    updateViews(query, sort);
+  }
+
   // show preview of note when element in the listbox gets selected
   const onListBoxEvent = function() {
-    const selectedIndex = listBox.selected - 1;
-    const note = shownNotes[selectedIndex] || {};
-    contentBox.setLabel(note.filename || 'no-file');
-    contentBox.setContent(data.render(note.content || ''));
-    screen.render();
+    previewNote(listBox.selected - 1);
   };
   listBox.on('element click', onListBoxEvent);
   listBox.key(['up', 'down'], onListBoxEvent);
 
-  // open the currently selected file when "o" is pressed
-  screen.key('o', () => {
-    const selectedIndex = listBox.selected - 1;
-    const note = shownNotes[selectedIndex];
-    if (note) {
-      data.open([note.filename]);
+  async function previewNote(index) {
+    const selectedNote = shownNotes[index];
+    if (!selectedNote) {
+      contentBox.setLabel('no-file');
+      contentBox.setContent('');
+      screen.render();
+      return Promise.resolve();
+    } else {
+      contentBox.setLabel(selectedNote.filename);
+      return data.readNote(selectedNote.filename)
+        .then(note => {
+          contentBox.setContent(data.render(note.content));
+          screen.render();
+        });
     }
-  });
+  }
 
-  function setSortOrder(index) {
-    if (index >= data.sort.options.length) {
-      index = 0;
-    }
-    if (index < 0) {
-      index = data.sort.options.length - 1;
-    }
-    sort = data.sort.options[index];
-    updateViews();
+  function openNote(index) {
+    const note = shownNotes[index];
+    if (note) data.open([note.filename])
   }
 
   // keyboard control
   // ----------------
+  screen.key('o', () => {
+    // open the currently selected file
+    openNote(listBox.selected - 1);
+  });
   screen.key(['s'], () => {
     // previous sort order
     setSortOrder(data.sort.options.indexOf(sort) + 1);
