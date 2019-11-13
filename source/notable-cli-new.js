@@ -77,7 +77,7 @@ function main(title = DEFAULT_TITLE, tags = '') {
   // remove the notable-cli home directory and split the other parts of the
   // directory and add them as tags
   if (path.dirname(basename) !== '.') {
-    path.dirname(basename).split(path.sep).map(tag => tags.push(tag));
+    path.dirname(basename).split('/').map(tag => tags.push(tag));
   }
   tags = tags.map(tag => tag.trim()).filter(v => v);
   // make tags unique
