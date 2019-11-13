@@ -49,9 +49,7 @@ async function readNote(filename) {
       note.metadata.title = String(note.metadata.title || path.basename(note.filename));
 
       // create unique value set of tags
-      let tags = new Set(note.metadata.tags || [])
-      // use sub directory as tags
-      path.dirname(filename).split(path.sep).map(tags.add.bind(tags));
+      let tags = new Set(note.metadata.tags || []);
 
       // sort the tags alphabetically while removing empty values
       note.metadata.tags = Array.from(tags)

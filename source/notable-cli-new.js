@@ -67,13 +67,21 @@ function main(title = DEFAULT_TITLE, tags = '') {
     .replace(/HH-MM/i, now.toISOString().substr(11, 5).replace(/:/g, '-'))
     .replace(/HHMM/i, now.toISOString().substr(11, 5).replace(/:/g, ''));
 
-  // sanitize tags (trim), remove empty ones
-  tags = tags.split(/\s*[,;]+\s*/gi).map(tag => tag.trim()).filter(v => v);
-
   // filename
   const basename = renderedTitle;
   const directory = path.join(config.HOME_PATH, path.dirname(basename));
   const filename = path.join(directory, path.basename(basename)) + '.md';
+
+  // sanitize tags (trim), remove empty ones
+  tags = tags.split(/\s*[,;]+\s*/gi);
+  // remove the notable-cli home directory and split the other parts of the
+  // directory and add them as tags
+  if (path.dirname(basename) !== '.') {
+    path.dirname(basename).split(path.sep).map(tag => tags.push(tag));
+  }
+  tags = tags.map(tag => tag.trim()).filter(v => v);
+  // make tags unique
+  tags = Array.from(new Set(tags));
 
   try {
     // check if title doesn’t contain a dot as first character or slashes
