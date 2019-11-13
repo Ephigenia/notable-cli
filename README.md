@@ -165,7 +165,7 @@ When the title of the note contains slashes it will be saved in a sub-directory 
 
     notable-cli new Project/Open-Source/YYYYMMDD-Note 
 
-Will create a new file in the "Project/Open-Source/" directory. If that directory doesn’t exist it will get created.
+Will create a new file in the "Project/Open-Source/" directory. If that directory doesn’t exist it will get created. Also each directory is added as tag of the newly created file so you don’t have to add them as tags.
 
 ## Templates
 
@@ -181,13 +181,13 @@ Using a template string
 
 ## Template variables
 
-| name           | value |
-| --------       | ----- |
-| `{{created}}`  | ISO string when the file was created |
-| `{{modified}}` | ISO string when the file was modified |
-| `{{tags}}`     | csv list of tags |
-| `{{title}}`    | title of the file |
-| `{{username}}` | current username |
+| name           | value                                         |
+|----------------|-----------------------------------------------|
+| `{{created}}`  | ISO string when the file was created          |
+| `{{modified}}` | ISO string when the file was modified         |
+| `{{tags}}`     | csv list of tags                              |
+| `{{title}}`    | title of the file                             |
+| `{{username}}` | current username                              |
 
 There’s also a "format" helper which can be used to add formatted english dates. F.e. if you use `{{ format created 'YYYY-MM-DD' }}` then it will add this date string at the position in the template.
 
@@ -196,5 +196,8 @@ Other Projects
 ===============================================================================
 List of other, alternate or compatible, inspiring projects that use similar markdown syntax or features.
 
+- [joplin-cli](https://joplinapp.org/terminal/)
 - [notable](https://notable.md)
 - [notes-cli](https://github.com/rhysd/notes-cli)
+- [orgmode](https://orgmode.org)
+- [tnote](https://github.com/tasdikrahman/tnote)
