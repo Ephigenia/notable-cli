@@ -56,10 +56,10 @@
     "version": "npm run changelog && git add CHANGELOG.md"
   },
   "dependencies": {
-    "chalk": "^2.4.2",
+    "chalk": "^3.0.0",
     "columnify": "^1.5.4",
-    "commander": "^3.0.2",
-    "handlebars": "^4.5.1",
+    "commander": "^4.0.1",
+    "handlebars": "^4.5.2",
     "marked": "^0.7.0",
     "marked-terminal": "^3.3.0",
     "moment": "^2.24.0",
@@ -69,9 +69,9 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "conventional-changelog-cli": "^2.0.25",
-    "conventional-recommended-bump": "^6.0.2",
-    "eslint": "^6.5.1",
+    "conventional-changelog-cli": "^2.0.27",
+    "conventional-recommended-bump": "^6.0.4",
+    "eslint": "^6.6.0",
     "mocha": "^6.2.2"
   },
   "optionalDependencies": {
