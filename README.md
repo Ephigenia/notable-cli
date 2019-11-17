@@ -63,6 +63,10 @@ Searching by a specific date just needs to enter the date in `YYYYMMDD` format:
 
     notable-cli list 20191011
 
+If you enter multiple words all parts of the query must match. The following query will only return notes if all words are somewhere inside the note’s content, title or filename:
+
+    notable-cli list "project customername standup"
+
 ## Sorting Notes
 
 The list can be sorted using the `--sort` parameter. So you can open your last created note:
