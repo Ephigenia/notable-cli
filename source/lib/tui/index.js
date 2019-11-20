@@ -140,9 +140,21 @@ const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
     updateViews(query, sort);
   }
 
+  function debounce(func, wait = 200) {
+    let timeout;
+    var context = this, args = arguments;
+    const later = function() {
+      func.apply(context, args);
+    };
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  }
+
   // show preview of note when element in the listbox gets selected
+  // used for debounce event
   const onListBoxEvent = function() {
-    previewNote(listBox.selected - 1);
+    const selectedIndex = listBox.selected;
+    debounce(function() { previewNote(selectedIndex - 1); }, 200);
   };
   listBox.on('element click', onListBoxEvent);
   listBox.key(['up', 'down'], onListBoxEvent);
