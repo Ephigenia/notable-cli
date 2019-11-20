@@ -109,7 +109,7 @@ const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
     const lastColumnWidth = 24;
     const colWidths = [
       Math.round((COLS - lastColumnWidth) * 0.35),
-      Math.round((COLS - lastColumnWidth) * 0.55),
+      Math.round((COLS - lastColumnWidth) * 0.45),
       lastColumnWidth,
     ];
 
@@ -140,21 +140,28 @@ const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
     updateViews(query, sort);
   }
 
-  function debounce(func, wait = 200) {
-    let timeout;
-    var context = this, args = arguments;
-    const later = function() {
-      func.apply(context, args);
+  let timeout;
+  function debounce(func, wait = 200, immediate) {
+    clearTimeout(timeout);
+    return function() {
+      var context = this;
+      var args = arguments;
+      var later = function() {
+        timeout = null;
+        if (!immediate) func.apply(context, args);
+      };
+      var callNow = immediate && !timeout;
+
+      timeout = setTimeout(later, wait);
+      if (callNow) func.apply(context, args);
     };
-    if (timeout) clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
   }
 
   // show preview of note when element in the listbox gets selected
   // used for debounce event
   const onListBoxEvent = function() {
     const selectedIndex = listBox.selected;
-    debounce(function() { previewNote(selectedIndex - 1); }, 200);
+    debounce(() => previewNote(selectedIndex - 1), 1000)();
   };
   listBox.on('element click', onListBoxEvent);
   listBox.key(['up', 'down'], onListBoxEvent);
