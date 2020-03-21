@@ -32,6 +32,7 @@
     "type": "git",
     "url": "git+https://github.com/Ephigenia/notable-cli.git"
   },
+  "funding": "http://github.com/sponsors/Ephigenia",
   "bugs": {
     "url": "https://github.com/Ephigenia/notable-cli/issues"
   },
