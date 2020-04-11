@@ -130,12 +130,12 @@ There are 3 panes, search input, list of notes and a note-preview which shows th
 
 ### Key-Bindings
 
-- `<tab>` or `<shift>-<tab>` - focus on next or previous pane
-- `r` - reload data from directory
-- `f` - focus on text input search for fast searching notes
-- `o` - open the currently selected note in the editor
-- `q`, `<esc>`, `<ctrl>-c` - quit the application
-- `s` or `S` - switch to next or previous sorting direction
+- <kbd>tab</kbd> or <kbd>shift</kbd><kbd>tab</kbd> - focus on next or previous pane
+- <kbd>r</kbd> - reload data from directory
+- <kbd>f</kbd> - focus on text input search for fast searching notes
+- <kbd>o</kbd> - open the currently selected note in the editor
+- <kbd>q</kbd>, <kbd>esc</kbd>, <kbd>ctrl</kbd><kbd>c</kbd> - quit the application
+- <kbd>s</kbd> or <kbd>S</kbd> - switch to next or previous sorting direction
 
 ## Full output
 
