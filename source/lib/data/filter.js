@@ -11,8 +11,8 @@
  * @returns {Array<string>}
  */
 function splitSearchQuery(query) {
-  // split query by words, but keep quoted parts intact
-  let queryParts = String(query).match(/\w+|"[^"]*"/g) || [];
+  // split query by words, but keep quoted parts and paths intact
+  let queryParts = String(query).match(/[\w/]+|"[^"]*"/g) || [];
   queryParts = queryParts
     // remove leading and trailing quotes if there are any
     .map(query => query.replace(/^"|"$/g, ''))
@@ -45,7 +45,6 @@ function filter(note, query = '', tags = null, showHidden = false) {
     if (note.metadata.tags.some(tag => tags.indexOf(tag) > -1)) return true;
   }
 
-
   let queryParts = splitSearchQuery(query);
   if (!queryParts || queryParts.length === 0) return false;
 
@@ -64,5 +63,6 @@ function filter(note, query = '', tags = null, showHidden = false) {
 }
 
 module.exports = {
-  filter
+  filter,
+  splitSearchQuery,
 };
