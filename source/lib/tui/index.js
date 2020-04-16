@@ -92,7 +92,7 @@ const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
     const date = note.metadata.created.toJSON().replace(/T|:[0-9.]+Z$/g, ' ').trim();
     return ([
       String(note.metadata.title) || '',
-      note.metadata.tags.join(', '),
+      note.metadata.tags.join(','),
       `${date} / ${ageInDays}`,
     ]);
   };
