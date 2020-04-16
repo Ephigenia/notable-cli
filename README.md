@@ -2,6 +2,24 @@ Simple to use jekyll-markdown parsing note-taking app for the command line and y
 
 **Package is still in development and testing. There may be breaking changes.**
 
+- [Features](#features)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+    - [Notes](#notes)
+        - [Search](#search)
+        - [Sorting](#sorting)
+        - [Open](#open)
+    - [Text-Based User Interface (TUI)](#text-based-user-interface-tui)
+        - [Panes](#panes)
+        - [Key-Bindings](#key-bindings)
+    - [Full output](#full-output)
+    - [Tags](#tags)
+    - [New Notes](#new-notes)
+    - [New Notes in Sub-Directories](#new-notes-in-sub-directories)
+    - [Templates](#templates)
+    - [Template variables](#template-variables)
+- [Other Projects](#other-projects)
 
 Features
 ===============================================================================
@@ -43,13 +61,13 @@ If `NOTABLE_CLI_HOME` isn’t defined, it checks for `NOTES_CLI_HOME` or `NOTES_
 Usage
 ===============================================================================
 
-List Notes
+Notes
 -------------------------------------------------------------------------------
 Listing all notes in column output with creation data, title and tags:
 
     notable-cli list --oneline
 
-## Search Notes
+### Search
 
 You can search in *tags*, *title* and *content* of all notes with a regular expression syntax when using the first argument "query". Just imagine you’re searching your notes which contain "Meeting":
 
@@ -67,13 +85,13 @@ If you enter multiple words all parts of the query must match. The following que
 
     notable-cli list "project customername standup"
 
-## Sorting Notes
+### Sorting
 
 The list can be sorted using the `--sort` parameter. So you can open your last created note:
 
     notable-cli list --sort created | tail -n 1 | xargs $EDITOR
 
-## Open Notes
+### Open
 
 Notes can be opened piping the output of `notable-cli list` to your favorite editor or by using the `--editor` option which opens the editor.
 
@@ -82,6 +100,7 @@ Notes can be opened piping the output of `notable-cli list` to your favorite edi
 Same thing can be archived by:
 
     notable-cli list --editor
+
 
 Text-Based User Interface ([TUI](https://en.wikipedia.org/wiki/Text-based_user_interface))
 -------------------------------------------------------------------------------

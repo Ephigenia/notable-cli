@@ -161,7 +161,7 @@ const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
   // used for debounce event
   const onListBoxEvent = function() {
     const selectedIndex = listBox.selected;
-    debounce(() => previewNote(selectedIndex - 1), 1000)();
+    debounce(() => previewNote(selectedIndex - 1), 100)();
   };
   listBox.on('element click', onListBoxEvent);
   listBox.key(['up', 'down'], onListBoxEvent);
