@@ -101,6 +101,10 @@ Same thing can be archived by:
 
     notable-cli list --editor
 
+Create PDF from a note using [md-to-pdf](https://www.npmjs.com/package/md-to-pdf)
+
+    notable-cli my-search-term | head -n 1 | xargs cat | md-to-pdf
+
 
 Text-Based User Interface ([TUI](https://en.wikipedia.org/wiki/Text-based_user_interface))
 -------------------------------------------------------------------------------
