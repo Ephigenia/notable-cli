@@ -61,10 +61,10 @@
     "chalk": "^4.0.0",
     "columnify": "^1.5.4",
     "commander": "^5.0.0",
+    "dayjs": "1.10.0",
     "handlebars": "^4.7.6",
     "marked": "^0.8.2",
     "marked-terminal": "^4.0.0",
-    "moment": "^2.24.0",
     "neo-blessed": "^0.2.0",
     "parse-md": "^2.0.4",
     "recursive-readdir": "^2.2.2"

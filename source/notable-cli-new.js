@@ -3,24 +3,13 @@
 
 const program = require('commander');
 const fs = require('fs');
-const Handlebars = require('handlebars');
 const path = require('path');
-const moment = require('moment');
+
+const { renderTemplate } = require('./lib/renderTemplate');
 
 const data = require('./lib/data');
 const pkg = require('./../package.json');
 const config = require('./config');
-
-program
-  .version(pkg.version)
-  .description('Creates a new note', {
-    title: 'title of the note to be created, YYYY-MM-DD and HH-MM would be replaced',
-    tags: 'csv list of tags to add',
-  })
-  .arguments('[title] [tags]')
-  ;
-
-const DEFAULT_TITLE = 'YYYYMMDD-HHMM Note';
 
 const DEFAULT_TEMPLATE = `---
 tags: [{{ tags }}]
@@ -33,29 +22,16 @@ modified: '{{ format modified }}'
 # {{ title }}
 `;
 
-/**
- * Renders the vars into the source template using handlebars
- *
- * @param {string} source
- * @param {object<string, any>} data
- */
-function renderTemplate(source = DEFAULT_TEMPLATE, data = {}) {
-  Handlebars.registerHelper('toISOString', (input) => {
-    return new Handlebars.SafeString(input.toISOString());
-  });
-  Handlebars.registerHelper('format', (input, format) => {
-    if (typeof format === 'string') {
-      return new Handlebars.SafeString(moment(input).format(format));
-    } else {
-      return new Handlebars.SafeString(input.toISOString());
-    }
-  });
-  const template = Handlebars.compile(source);
-  // add default variable values
-  const vars = Object.assign(data, {});
-  return template(vars);
-}
+program
+  .version(pkg.version)
+  .description('Creates a new note', {
+    title: 'title of the note to be created, YYYY-MM-DD and HH-MM would be replaced',
+    tags: 'csv list of tags to add',
+  })
+  .arguments('[title] [tags]')
+  ;
 
+const DEFAULT_TITLE = 'YYYYMMDD-HHMM Note';
 
 function main(title = DEFAULT_TITLE, tags = '') {
   const now = new Date();
@@ -112,7 +88,7 @@ function main(title = DEFAULT_TITLE, tags = '') {
   }
 
   // template
-  const content = renderTemplate(templateSource, {
+  const content = renderTemplate(templateSource || DEFAULT_TEMPLATE, {
     created: now,
     modified: now,
     tags,
