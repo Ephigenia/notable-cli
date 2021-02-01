@@ -28,7 +28,7 @@ function sort(a, b, field) {
       return modifier(a.metadata.modified - b.metadata.modified);
     case 'title':
     default:
-      return modifier(a.metadata.title.localeCompare(b.metadata.title));
+      return modifier(String(a.metadata.title).localeCompare(String(b.metadata.title)));
   }
 }
 
