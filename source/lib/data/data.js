@@ -40,42 +40,56 @@ function fileFilter(file, stats) {
  * @returns {Promise<ParsedNote>}
  */
 async function readNote(filename) {
+  const basename = path.basename(filename);
+  const { mtime, birthtime } = fs.statSync(filename);
+  const base = {
+    hidden: /^\./.test(basename),
+    filename,
+    content: '',
+    metadata: {
+      created: birthtime,
+      modified: mtime,
+      title: basename,
+      tags: [],
+    }
+  };
   return readFileP(filename, 'utf8')
-    .then(content => parseMD(content))
+    .then(content => {
+      base.content = content;
+      return parseMD(content);
+    })
+    .catch(err => {
+      // catch and ignore parsing errors by using defaults
+      console.error(`Error while reading "${filename}": ${err.message}`);
+      return Object.assign({}, base);
+    })
     .then(note => {
-      const basename = path.basename(filename);
-      note.hidden = /^\./.test(basename);
-      note.filename = filename;
-      note.metadata.title = String(note.metadata.title || path.basename(note.filename));
-
-      // create unique value set of tags
-      let tags = new Set(note.metadata.tags || []);
-
+      // merge the parsed metadata with the base metadata
+      note.metadata = Object.assign({}, base.metadata, note.metadata);
+      note = Object.assign({}, base, note);
+      return note;
+    })
+    .then(note => {
       // sort the tags alphabetically while removing empty values
-      note.metadata.tags = Array.from(tags)
+      note.metadata.tags = Array.from(new Set(note.metadata.tags || []))
         .filter(tag => tag)
         .filter(tag => typeof(tag) === 'string');
       note.metadata.tags.sort((a, b) => {
         return a.localeCompare(b);
       });
-
-      // fallback to file creation data when metadata is empty
-      const { mtime, birthtime } = fs.statSync(note.filename);
-      if (note.metadata.created) {
-        note.metadata.created = new Date(note.metadata.created);
-      }
-      if (!note.metadata.created || String(note.metadata.created) === 'Invalid Date') {
-        note.metadata.created = birthtime;
-      }
-      note.metadata.modified = new Date(note.metadata.modified);
-      if (!note.metadata.modified || String(note.metadata.modified) === 'Invalid Date') {
-        note.metadata.modified = mtime;
-      }
       return note;
     })
-    .catch(err => {
-      console.error(`Error while reading "${filename}": ${err.message}`);
-      throw err;
+    .then((note) => {
+      // try to convert date values to instance of date
+      ['modified', 'created'].forEach((attr) => {
+        const val = note.metadata[attr];
+        if (val instanceof Date) return;
+        const parsedDate = Date.parse(val);
+        if (!isNaN(parsedDate)) {
+          note.metadata[attr] = new Date(parsedDate);
+        }
+      });
+      return note;
     });
 }
 

@@ -87,14 +87,21 @@ const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
   };
 
   const listBoxNoteRow = function(note) {
-    const lastChange = note.metadata.modified || note.metadata.created;
-    const ageInDays = Math.round((Date.now() - lastChange.getTime()) / 1000 / 3600 / 24);
-    const date = note.metadata.created.toJSON().replace(/T|:[0-9.]+Z$/g, ' ').trim();
-    return ([
-      String(note.metadata.title) || '',
-      note.metadata.tags.join(','),
-      `${date} / ${ageInDays}`,
-    ]);
+    const { modified, created, title, tags } = note.metadata || {};
+    const columns = [
+      String(title) || '',
+      tags.join(','),
+      '',
+    ];
+    // every var can contain a variable, not sure if it’s a instance of Date
+    if (created instanceof Date) {
+      columns[2] = created.toJSON().replace(/T|:[0-9.]+Z$/g, ' ').trim();
+    }
+    const lastChange = modified || created;
+    if (lastChange instanceof Date) {
+      columns[2] += ' / ' + Math.round((Date.now() - lastChange.getTime()) / 1000 / 3600 / 24).toFixed(0);
+    }
+    return columns;
   };
 
   const updateListBox = function(notes, sort) {
