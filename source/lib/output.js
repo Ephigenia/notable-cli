@@ -21,7 +21,7 @@ function full(notes) {
 function oneline(notes) {
   const data = notes.map(note => {
     return [
-      chalk.green(note.metadata.created.toJSON()),
+      !isNaN(note.metadata.created) ? chalk.green(note.metadata.created.toJSON()) : '',
       chalk.yellow(note.metadata.title),
       note.metadata.tags.join(','),
     ];
