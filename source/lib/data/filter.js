@@ -25,6 +25,8 @@ function splitSearchQuery(query) {
 /**
  * Filtering function for searching notes
  *
+ * // TODO increase position of result when search has a better match
+ *
  * @param {import('./data').ParsedNote} note - required note that should be
  *   filtered
  * @param {String} [query] - optional query string split into words and searching
@@ -40,6 +42,12 @@ function filter(note, query = '', tags = null, showHidden = false) {
 
   if (note.hidden && showHidden === false) return false;
 
+  // search in category of note
+  if (note.category && note.category.indexOf(query) > -1) {
+    return true;
+  }
+
+  // search in tags of note
   if (Array.isArray(tags) && tags.length > 0) {
     // if one tag matches the searched tags (intersection)
     if (note.metadata.tags.some(tag => tags.indexOf(tag) > -1)) return true;

@@ -16,6 +16,8 @@ program
   .description('list/show/filter notes', {
     query: 'Optional search query to use'
   })
+  // TODO not sure if this is required, as this can be archived using xargs
+  //      like notable-cli --editor | xargs "${EDITOR}"" -e
   .option('-e, --editor', 'open editor with resulting filtered notes')
   .option('-f, --full', 'full output', false)
   .option('-i, --interactive', 'interactive text-based interface (tui)', false)

@@ -30,6 +30,7 @@ function fileFilter(file, stats) {
  * @property {Object} NoteMetadata
  *   object containing the parsed metadata
  * @property {String} filename - full path to the note’s file
+ * @property {String} category - relative path to the file
  * @property {content} Buffer - already readable buffer of the file’s content
  *   without the metadata
  * @property {Boolean} hidden - set to true when the file/note is hidden
@@ -37,15 +38,17 @@ function fileFilter(file, stats) {
 
 /**
  * @param {string} filename
+ * @param {string} basePath
  * @returns {Promise<ParsedNote>}
  */
-async function readNote(filename) {
+async function readNote(filename, basePath) {
   const basename = path.basename(filename);
   const { mtime, birthtime } = fs.statSync(filename);
   const base = {
     hidden: /^\./.test(basename),
     filename,
     content: '',
+    category: path.dirname(filename).substr(basePath.length + 1) || null,
     metadata: {
       created: birthtime,
       modified: mtime,
@@ -94,12 +97,12 @@ async function readNote(filename) {
 }
 
 /**
- * @param {string} filename
+ * @param {string} path root path of notes to be read
  * @returns {Promise<ParsedNote[]>}
  */
 async function read(path) {
   return recursiveReadDirP(path, [fileFilter])
-    .then(files => Promise.all(files.map(readNote)));
+    .then(files => Promise.all(files.map((file) => readNote(file, path))));
 }
 
 
