@@ -16,9 +16,24 @@ program
   .description('list/show/filter notes', {
     query: 'Optional search query to use'
   })
-  // TODO not sure if this is required, as this can be archived using xargs
-  //      like notable-cli --editor | xargs "${EDITOR}"" -e
-  .option('-e, --editor', 'open editor with resulting filtered notes')
+  .addHelpText('after', `
+
+Examples:
+  Search notes containing "query" in tag, category or content
+    notable-cli query
+
+  Search for specific tags
+    notable-cli --tag mytag
+
+  Serach for notes in specific category (folder)
+    notable-cli project/name/todos
+
+  Open list of all matching files in your standard editor (for other processing)
+    notable-cli query | $EDITOR
+
+  Open all matching files in editor
+    notable-cli searchquery | xargs $EDITOR -0
+`)
   .option('-f, --full', 'full output', false)
   .option('-i, --interactive', 'interactive text-based interface (tui)', false)
   .option('-j, --json', 'json output', false)
@@ -45,15 +60,6 @@ function main(query = '', options = {}) {
       // filters the notes according to --search and --tag filter
       const shownNotes = notes.filter(note => data.filter.filter(note, query, options.tag, options.all));
       shownNotes.sort((a, b) => data.sort.sort(a, b, options.sort));
-      if (options.editor) {
-        if (shownNotes.length === 0) {
-          console.error('no files found that could be opened.');
-          process.exit(1);
-        }
-        const filenames = shownNotes.map(note => note.filename);
-        data.open(filenames);
-        process.exit(0);
-      }
 
       let format = null;
       if (options.oneline) {

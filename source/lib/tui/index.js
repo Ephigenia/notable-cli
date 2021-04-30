@@ -189,7 +189,7 @@ const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
 
   function openNote(index) {
     const note = shownNotes[index];
-    if (note) data.open([note.filename])
+    if (note) data.open([note.filename]);
   }
 
   // keyboard control
