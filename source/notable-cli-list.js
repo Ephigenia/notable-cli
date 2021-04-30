@@ -19,16 +19,25 @@ program
   .addHelpText('after', `
 
 Examples:
-  Search notes containing "query" in tag, category or content
+  Search notes containing "query" in tag, category or content:
     notable-cli query
 
-  Search for specific tags
+  Search for specific tags:
     notable-cli --tag mytag
 
-  Serach for notes in specific category (folder)
+  Serach for notes in specific category (folder):
     notable-cli project/name/todos
 
-  Open list of all matching files in your standard editor (for other processing)
+  Start interactive text-interface
+    notable-cli --interactive
+
+  Start interactive text-interface with query:
+    notable-cli --interactive project/example
+
+  Get Everything as JSON for additional processing with jq:
+    notable-cli query --json | jq
+
+  Open the list of matching filename(s) in editor:
     notable-cli query | $EDITOR
 
   Open all matching files in editor
