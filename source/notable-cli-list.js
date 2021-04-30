@@ -30,22 +30,22 @@ program
   })
   ;
 
-function main(query = '') {
+function main(query = '', options = {}) {
   // start interactive mode
-  if (program.interactive) {
-    return tui(config.HOME_PATH, query, program.sort, program.tag, program.all);
+  if (options.interactive) {
+    return tui(config.HOME_PATH, query, options.sort, options.tag, options.all);
   }
 
   // normal one-time execution mode
   return data.readFromPath(config.HOME_PATH)
     .then(notes => {
-      if (program.interactive) {
-        return tui(notes, query, program.sort, program.tag, program.all);
+      if (options.interactive) {
+        return tui(notes, query, options.sort, options.tag, options.all);
       }
       // filters the notes according to --search and --tag filter
-      const shownNotes = notes.filter(note => data.filter.filter(note, query, program.tag, program.all));
-      shownNotes.sort((a, b) => data.sort.sort(a, b, program.sort));
-      if (program.editor) {
+      const shownNotes = notes.filter(note => data.filter.filter(note, query, options.tag, options.all));
+      shownNotes.sort((a, b) => data.sort.sort(a, b, options.sort));
+      if (options.editor) {
         if (shownNotes.length === 0) {
           console.error('no files found that could be opened.');
           process.exit(1);
@@ -56,15 +56,17 @@ function main(query = '') {
       }
 
       let format = null;
-      if (program.oneline) {
+      if (options.oneline) {
         format = 'oneline';
-      } else if (program.full) {
+      } else if (options.full) {
         format = 'full';
-      } else if (program.json) {
+      } else if (options.json) {
         format = 'json';
       }
       console.log(output(format, shownNotes));
     });
 }
 
-program.action(main).parse(process.argv);
+program
+  .action((query) => main(query, program.opts()))
+  .parse(process.argv);

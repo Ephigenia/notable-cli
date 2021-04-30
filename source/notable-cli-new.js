@@ -100,4 +100,6 @@ function main(title = DEFAULT_TITLE, tags = '') {
   data.open([filename]);
 }
 
-program.action(main).parse(process.argv);
+program
+  .action((title, tags) => main(title, tags, program.opts()))
+  .parse(process.argv);

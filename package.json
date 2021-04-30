@@ -58,23 +58,22 @@
     "version": "npm run changelog && git add CHANGELOG.md"
   },
   "dependencies": {
-    "chalk": "^4.0.0",
+    "chalk": "^4.1.1",
     "columnify": "^1.5.4",
-    "commander": "^5.0.0",
-    "dayjs": "1.10.0",
-    "handlebars": "^4.7.6",
-    "marked": "^0.8.2",
-    "marked-terminal": "^4.0.0",
+    "commander": "^7.2.0",
+    "dayjs": "^1.10.4",
+    "handlebars": "^4.7.7",
+    "marked": "^2.0.3",
+    "marked-terminal": "^4.1.1",
     "neo-blessed": "^0.2.0",
     "parse-md": "^2.0.4",
     "recursive-readdir": "^2.2.2"
   },
   "devDependencies": {
-    "chai": "4.2.0",
-    "conventional-changelog-cli": "^2.1.0",
-    "conventional-recommended-bump": "^6.0.10",
-    "eslint": "^6.8.0",
-    "mocha": "^7.1.1"
-  },
-  "optionalDependencies": {}
+    "chai": "^4.3.4",
+    "conventional-changelog-cli": "^2.1.1",
+    "conventional-recommended-bump": "^6.1.0",
+    "eslint": "^7.25.0",
+    "mocha": "^8.3.2"
+  }
 }

@@ -14,25 +14,27 @@ program
   .option('-f, --full', 'full output', false)
   ;
 
-function main() {
-  return data.readFromPath(config.HOME_PATH)
-    .then(notes => {
-      let values = new Set();
-      if (program.full) {
-        notes
-          .map(note => note.category)
-          .filter(v => v)
-          .forEach(values.add, values);
-      } else {
-        notes.map(note => note.metadata.tags)
-          .flat()
-          .filter(v => v)
-          .forEach(values.add, values);
-      }
-      values = Array.from(values);
-      values.sort((a, b) => String(a).localeCompare(String(b)));
-      values.forEach(tag => console.log(tag));
-    });
+async function main(options = {}) {
+  const notes = await data.readFromPath(config.HOME_PATH);
+  let values = new Set();
+  if (options.full) {
+    notes
+      .map(note => note.category)
+      .filter(v => v)
+      .forEach(values.add, values);
+  } else {
+    notes.map(note => note.metadata.tags)
+      .flat()
+      .filter(v => v)
+      .forEach(values.add, values);
+  }
+
+  // sorted output
+  values = Array.from(values);
+  values.sort((a, b) => String(a).localeCompare(String(b)));
+  values.forEach(tag => console.log(tag));
 }
 
-program.action(main).parse(process.argv);
+program
+  .action(() => main(program.opts()))
+  .parse(process.argv);
