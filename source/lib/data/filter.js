@@ -41,7 +41,6 @@ function filter(note, query = '', tags = null, showHidden = false) {
   if (!tags && !query) return true;
 
   if (note.hidden && showHidden === false) return false;
-
   // search in category of note
   if (note.category && note.category.indexOf(query) > -1) {
     return true;

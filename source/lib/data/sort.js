@@ -7,6 +7,8 @@ const options = [
   '-title',
   '-modified',
   'modified',
+  '-category',
+  'category',
 ];
 
 /**
@@ -22,6 +24,8 @@ function sort(a, b, field) {
     modifier = v => -v;
   }
   switch(sort) {
+    case 'category':
+      return modifier(String(a.category).localeCompare(String(b.category)));
     case 'created':
       return modifier(a.metadata.created - b.metadata.created);
     case 'modified':

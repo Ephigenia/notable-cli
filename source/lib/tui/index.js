@@ -168,7 +168,7 @@ const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
   // used for debounce event
   const onListBoxEvent = function() {
     const selectedIndex = listBox.selected;
-    debounce(() => previewNote(selectedIndex - 1), 100)();
+    debounce(() => previewNote(selectedIndex - 1), 5)();
   };
   listBox.on('element click', onListBoxEvent);
   listBox.key(['up', 'down'], onListBoxEvent);
@@ -182,11 +182,8 @@ const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
       return Promise.resolve();
     } else {
       contentBox.setLabel(selectedNote.filename);
-      return data.readNote(selectedNote.filename)
-        .then(note => {
-          contentBox.setContent(data.render(note.content));
-          screen.render();
-        });
+      contentBox.setContent(data.render(selectedNote.content));
+      return screen.render();
     }
   }
 
