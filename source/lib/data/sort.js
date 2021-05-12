@@ -1,6 +1,8 @@
 'use strict';
 
 const options = [
+  '-score',
+  'score',
   '-created',
   'created',
   'title',
@@ -24,6 +26,8 @@ function sort(a, b, field) {
     modifier = v => -v;
   }
   switch(sort) {
+    case 'score':
+      return modifier(a.score - b.score);
     case 'category':
       return modifier(String(a.category).localeCompare(String(b.category)));
     case 'created':

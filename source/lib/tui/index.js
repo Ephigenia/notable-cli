@@ -72,8 +72,7 @@ const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
       query,
       10
     );
-    // shownNotes = notes.filter(note => data.filter.filter(note, query, queryTag, includeHidden));
-    // shownNotes.sort((a, b) => data.sort.sort(a, b, sort));
+    shownNotes.sort((a, b) => data.sort.sort(a, b, sort));
     updateListBox(shownNotes, sort);
   };
 
@@ -86,6 +85,7 @@ const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
       [
         'Created' + ((sort === '-created' ? DESC : (sort === 'created' ? ASC : ''))),
         'Age' + ((sort === '-modified' ? DESC : (sort === 'modified' ? ASC : ''))),
+        'Score' + ((sort === '-score' ? DESC : (sort === 'score' ? ASC : ''))),
       ].join(' / '),
     ]];
     return tableHeader;

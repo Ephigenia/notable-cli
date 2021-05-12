@@ -47,7 +47,7 @@ Examples:
   .option('-i, --interactive', 'interactive text-based interface (tui)', false)
   .option('-j, --json', 'json output', false)
   .option('-o, --oneline', 'one-line output', false)
-  .option('-s, --sort <criteria>', 'sorting', '-created')
+  .option('-s, --sort <criteria>', 'sorting')
   .option('-a, --all', 'show all notes, also hidden notes', false)
   .option('-t, --tag <tag>', 'show notes having the given tag, case-sensitive', (val) => {
     return val.split(/\s*,\s*/).map(v => v.trim()).filter(v => v);
@@ -55,6 +55,12 @@ Examples:
   ;
 
 function main(query = '', options = {}) {
+  if (!options.sort) {
+    options.sort = '-created';
+    if (query) {
+      options.sort = '-score';
+    }
+  }
   // start interactive mode
   if (options.interactive) {
     return tui(config.HOME_PATH, query, options.sort, options.tag, options.all);
@@ -72,9 +78,7 @@ function main(query = '', options = {}) {
         query,
         10
       );
-      if (!query) {
-        shownNotes.sort((a, b) => data.sort.sort(a, b, options.sort));
-      }
+      shownNotes.sort((a, b) => data.sort.sort(a, b, options.sort));
 
       let format = null;
       if (options.oneline) {
@@ -84,7 +88,7 @@ function main(query = '', options = {}) {
       } else if (options.json) {
         format = 'json';
       }
-      // console.log(output(format, shownNotes));
+      console.log(output(format, shownNotes));
     });
 }
 

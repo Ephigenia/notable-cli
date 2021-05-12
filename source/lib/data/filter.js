@@ -43,16 +43,13 @@ function searchScore(note, query) {
     score += Number(note.filename.includes(term));
     // eacth match in the content of the note has lowest impact
     score += [...note.content.matchAll(regexp)].length * 0.25;
-  })
+  });
   return score;
 }
 
 function scoredSearch(notes, query) {
-  return notes
-    .map(note => ({
-      note: note,
-      score: searchScore(note, query)
-    }));
+  notes.forEach(note => note.score = searchScore(note, query));
+  return notes;
 }
 
 function filterByQuery(notes, query, minimumPercentile = 0) {
@@ -65,8 +62,7 @@ function filterByQuery(notes, query, minimumPercentile = 0) {
   const scoreMax = Math.max(...scores);
   return scoredNotes
     .filter(({ score }) => score >= scoreMax * minimumPercentile / 100)
-    .sort((a, b) => b.score - a.score)
-    .map(({note}) => note);
+    .sort((a, b) => b.score - a.score);
 }
 
 /**
