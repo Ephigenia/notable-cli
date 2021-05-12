@@ -52,7 +52,7 @@
     "tdd": "npm run test -- --watch",
     "test:outdated": "npm outdated",
     "test:security": "npm audit",
-    "test": "mocha --check-leaks --exit source/**/*test.js",
+    "test": "mocha --check-leaks --exit \"./{,!(node_modules)/**}/*.test.js\"",
     "update": "npx npm-check --update",
     "version:recommend": "conventional-recommended-bump --preset angular",
     "version": "npm run changelog && git add CHANGELOG.md"

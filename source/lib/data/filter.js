@@ -23,6 +23,53 @@ function splitSearchQuery(query) {
 }
 
 /**
+ * Calculates a score for the given note which indicates how good the query
+ * matches the note’s content
+ *
+ * @param {import('./data').ParsedNote} note the note
+ * @param {string} query
+ */
+function searchScore(note, query) {
+  let score = 0;
+
+  let terms = splitSearchQuery(query);
+  terms.forEach(term => {
+    let regexp = new RegExp(term, 'gi');
+    if (note.category) score += Number(note.category.indexOf(term) > 0) * 12;
+    // the more parts of the query match to highter the score should be
+    // matches in the tags of a note should have highest impact on score
+    score += note.metadata.tags.filter(tag => String(tag).match(term)).length * 6;
+    // matches in the path of the file should have lower impact
+    score += Number(note.filename.includes(term));
+    // eacth match in the content of the note has lowest impact
+    score += [...note.content.matchAll(regexp)].length * 0.25;
+  })
+  return score;
+}
+
+function scoredSearch(notes, query) {
+  return notes
+    .map(note => ({
+      note: note,
+      score: searchScore(note, query)
+    }));
+}
+
+function filterByQuery(notes, query, minimumPercentile = 0) {
+  if (!query) return notes;
+  if (!notes.length) return notes;
+
+  const scoredNotes = scoredSearch(notes, query);
+  const scores = scoredNotes.map(({score}) => score);
+  // const scoreAvg = scores.reduce((acc, cur) => acc + cur, 0) / scores.length;
+  const scoreMax = Math.max(...scores);
+  return scoredNotes
+    .filter(({ score }) => score >= scoreMax * minimumPercentile / 100)
+    .sort((a, b) => b.score - a.score)
+    .map(({note}) => note);
+}
+
+/**
  * Filtering function for searching notes
  *
  * // TODO increase position of result when search has a better match
@@ -37,14 +84,8 @@ function splitSearchQuery(query) {
  *   are considerd to be "hidden"
  * @returns {boolean}
  */
-function filter(note, query = '', tags = null, showHidden = false) {
-  if (!tags && !query) return true;
-
+function filter(note, tags = null, showHidden = false) {
   if (note.hidden && showHidden === false) return false;
-  // search in category of note
-  if (note.category && note.category.indexOf(query) > -1) {
-    return true;
-  }
 
   // search in tags of note
   if (Array.isArray(tags) && tags.length > 0) {
@@ -52,24 +93,12 @@ function filter(note, query = '', tags = null, showHidden = false) {
     if (note.metadata.tags.some(tag => tags.indexOf(tag) > -1)) return true;
   }
 
-  let queryParts = splitSearchQuery(query);
-  if (!queryParts || queryParts.length === 0) return false;
-
-  const matchingParts = queryParts.filter(query => {
-    // match using regexp on title and content
-    const regexp = new RegExp(query, 'i');
-    return (
-      note.metadata.tags.some(tag => regexp.test(tag)) ||
-      regexp.test(note.metadata.title) ||
-      regexp.test(note.content) ||
-      regexp.test(note.filename)
-    );
-  });
-
-  return matchingParts.length === queryParts.length;
+  return true;
 }
 
 module.exports = {
   filter,
+  filterByQuery,
   splitSearchQuery,
+  searchScore,
 };

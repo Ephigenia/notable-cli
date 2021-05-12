@@ -67,8 +67,13 @@ const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
   };
 
   const updateViews = async function(query, sort) {
-    shownNotes = notes.filter(note => data.filter.filter(note, query, queryTag, includeHidden));
-    shownNotes.sort((a, b) => data.sort.sort(a, b, sort));
+    shownNotes = data.filter.filterByQuery(
+      notes.filter(note => data.filter.filter(note, queryTag, includeHidden)),
+      query,
+      10
+    );
+    // shownNotes = notes.filter(note => data.filter.filter(note, query, queryTag, includeHidden));
+    // shownNotes.sort((a, b) => data.sort.sort(a, b, sort));
     updateListBox(shownNotes, sort);
   };
 

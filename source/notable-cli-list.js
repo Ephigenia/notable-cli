@@ -67,8 +67,14 @@ function main(query = '', options = {}) {
         return tui(notes, query, options.sort, options.tag, options.all);
       }
       // filters the notes according to --search and --tag filter
-      const shownNotes = notes.filter(note => data.filter.filter(note, query, options.tag, options.all));
-      shownNotes.sort((a, b) => data.sort.sort(a, b, options.sort));
+      const shownNotes = data.filter.filterByQuery(
+        notes.filter(note => data.filter.filter(note, options.tag, options.all)),
+        query,
+        10
+      );
+      if (!query) {
+        shownNotes.sort((a, b) => data.sort.sort(a, b, options.sort));
+      }
 
       let format = null;
       if (options.oneline) {
@@ -78,7 +84,7 @@ function main(query = '', options = {}) {
       } else if (options.json) {
         format = 'json';
       }
-      console.log(output(format, shownNotes));
+      // console.log(output(format, shownNotes));
     });
 }
 
