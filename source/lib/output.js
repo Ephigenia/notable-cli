@@ -1,17 +1,16 @@
 'use strict';
 
-const chalk = require('chalk');
-const columnify = require('columnify');
+const colors = require('ansi-colors');
 
 const escapeFilename = require('./escapeFilename');
 const render = require('./data/render');
 
 function full(notes) {
   const data = notes.map(note => [
-    chalk.green(note.filename),
+    colors.green(note.filename),
     Object.entries(note.metadata).map(([key, value]) => {
       let valueStr = Array.isArray(value) ? value.join(', ') : value;
-      return chalk.yellow(key) + ': ' + valueStr;
+      return colors.yellow(key) + ': ' + valueStr;
     }).join('\n'),
     "\n" + render(note.content),
   ]);
@@ -21,15 +20,12 @@ function full(notes) {
 function oneline(notes) {
   const data = notes.map(note => {
     return [
-      !isNaN(note.metadata.created) ? chalk.green(note.metadata.created.toJSON()) : '',
-      chalk.yellow(note.metadata.title),
+      !isNaN(note.metadata.created) ? colors.green(note.metadata.created.toJSON()) : '',
+      colors.yellow(note.metadata.title),
       note.metadata.tags.join(','),
     ];
   });
-  const columns = columnify(data, {
-    showHeaders: false,
-  });
-  return columns;
+  return data.map(row => row.join('\t')).join('\n');
 }
 
 module.exports = function(format, notes) {

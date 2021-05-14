@@ -58,8 +58,7 @@
     "version": "npm run changelog && git add CHANGELOG.md"
   },
   "dependencies": {
-    "chalk": "^4.1.1",
-    "columnify": "^1.5.4",
+    "ansi-colors": "4.1.1",
     "commander": "^7.2.0",
     "dayjs": "^1.10.4",
     "handlebars": "^4.7.7",
