@@ -207,7 +207,7 @@ const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
     // previous sort order
     setSortOrder(data.sort.options.indexOf(sort) + 1);
   });
-  screen.key(['S'], () => {
+  screen.key(['S-s'], () => {
     // next sort order
     setSortOrder(data.sort.options.indexOf(sort) - 1);
   });
