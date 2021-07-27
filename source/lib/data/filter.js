@@ -40,9 +40,9 @@ function searchScore(note, query) {
     // matches in the tags of a note should have highest impact on score
     score += note.metadata.tags.filter(tag => String(tag).match(term)).length * 6;
     // matches in the path of the file should have lower impact
-    score += Number(note.filename.includes(term));
-    // eacth match in the content of the note has lowest impact
-    score += [...note.content.matchAll(regexp)].length * 0.25;
+    score += Number(note.filename.includes(term)) * 2;
+    // exacth match in the content of the note has lowest impact
+    score += [...note.content.matchAll(regexp)].length * 1;
   });
   return score;
 }
@@ -58,11 +58,11 @@ function filterByQuery(notes, query, minimumPercentile = 0) {
 
   const scoredNotes = scoredSearch(notes, query);
   const scores = scoredNotes.map(({score}) => score);
-  // const scoreAvg = scores.reduce((acc, cur) => acc + cur, 0) / scores.length;
   const scoreMax = Math.max(...scores);
+
+  // remove the notes which don’t meet to be in the percentile of score
   return scoredNotes
-    .filter(({ score }) => score >= scoreMax * minimumPercentile / 100)
-    .sort((a, b) => b.score - a.score);
+    .filter(({ score }) => score >= scoreMax * minimumPercentile / 100);
 }
 
 /**

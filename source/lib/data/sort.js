@@ -26,14 +26,14 @@ function sort(a, b, field) {
     modifier = v => -v;
   }
   switch(sort) {
-    case 'score':
-      return modifier(a.score - b.score);
     case 'category':
       return modifier(String(a.category).localeCompare(String(b.category)));
+    case 'score':
     case 'created':
-      return modifier(a.metadata.created - b.metadata.created);
     case 'modified':
-      return modifier(a.metadata.modified - b.metadata.modified);
+      if (!(a.metadata[String(sort)] instanceof Date)) return modifier(1);
+      if (!(b.metadata[String(sort)] instanceof Date)) return modifier(1);
+      return modifier(a.metadata[String(sort)] - b.metadata[String(sort)]);
     case 'title':
     default:
       return modifier(String(a.metadata.title).localeCompare(String(b.metadata.title)));
