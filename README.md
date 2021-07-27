@@ -6,19 +6,19 @@ Simple to use jekyll-markdown parsing note-taking app for the command line and y
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Usage](#usage)
-    - [Notes](#notes)
-        - [Search](#search)
-        - [Sorting](#sorting)
-        - [Open](#open)
-    - [Text-Based User Interface (TUI)](#text-based-user-interface-tui)
-        - [Panes](#panes)
-        - [Key-Bindings](#key-bindings)
-    - [Full output](#full-output)
-    - [Tags](#tags)
-    - [New Notes](#new-notes)
-    - [New Notes in Sub-Directories](#new-notes-in-sub-directories)
-    - [Templates](#templates)
-    - [Template variables](#template-variables)
+  - [Notes](#notes)
+    - [Search](#search)
+    - [Sorting](#sorting)
+    - [Open](#open)
+  - [Text-Based User Interface (TUI)](#text-based-user-interface-tui)
+    - [Panes](#panes)
+    - [Key-Bindings](#key-bindings)
+  - [Full output](#full-output)
+  - [Tags](#tags)
+  - [New Notes](#new-notes)
+  - [New Notes in Sub-Directories](#new-notes-in-sub-directories)
+  - [Templates](#templates)
+  - [Template variables](#template-variables)
 - [Other Projects](#other-projects)
 
 Features
@@ -159,6 +159,7 @@ There are 3 panes, search input, list of notes and a note-preview which shows th
 - <kbd>o</kbd> - open the currently selected note in the editor
 - <kbd>q</kbd>, <kbd>esc</kbd>, <kbd>ctrl</kbd><kbd>c</kbd> - quit the application
 - <kbd>s</kbd> or <kbd>S</kbd> - switch to next or previous sorting direction
+- <kbd>C-e</kbd> or <kbd>C-y</kbd> - scroll top, scroll bottom
 
 ## Full output
 

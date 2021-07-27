@@ -177,6 +177,7 @@ const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
   };
   listBox.on('element click', onListBoxEvent);
   listBox.key(['up', 'down'], onListBoxEvent);
+  listBox.key(['pgup'], onListBoxEvent);
 
   async function previewNote(index) {
     const selectedNote = shownNotes[index];
@@ -210,6 +211,16 @@ const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
   screen.key(['S-s'], () => {
     // next sort order
     setSortOrder(data.sort.options.indexOf(sort) - 1);
+  });
+  screen.key(['C-e'], () => {
+    // scroll down
+    listBox.select(notes.length - 1);
+    listBox.setScroll(notes.length -1 );
+  });
+  screen.key(['C-y'], () => {
+    // scroll up
+    listBox.select(0);
+    listBox.setScroll(0);
   });
   screen.key(['r'], () => {
     // reload data
