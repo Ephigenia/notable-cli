@@ -42,9 +42,7 @@
   },
   "preferGlobal": true,
   "scripts": {
-    "changelog:preview": "conventional-changelog --output-unreleased -p angular",
-    "changelog": "conventional-changelog -s -i CHANGELOG.md -p angular -r 0",
-    "lint:fix": "npm run lint -- --fix",
+    "lint:fix": "npm run -s lint -- --fix",
     "lint": "eslint source",
     "postversion": "git push && git push --tags",
     "preversion": "npm test && npm run lint && npm run test:outdated",
@@ -53,26 +51,23 @@
     "test:outdated": "npm outdated",
     "test:security": "npm audit",
     "test": "mocha --check-leaks --exit \"./{,!(node_modules)/**}/*.test.js\"",
-    "update": "npx npm-check --update",
-    "version:recommend": "conventional-recommended-bump --preset angular",
+    "update": "npx npm-check --update --save-exact",
     "version": "npm run changelog && git add CHANGELOG.md"
   },
   "dependencies": {
     "ansi-colors": "4.1.1",
-    "commander": "^7.2.0",
-    "dayjs": "^1.10.4",
+    "commander": "8.1.0",
+    "dayjs": "1.10.6",
     "handlebars": "^4.7.7",
-    "marked": "^2.0.3",
-    "marked-terminal": "^4.1.1",
-    "neo-blessed": "^0.2.0",
-    "parse-md": "^2.0.4",
-    "recursive-readdir": "^2.2.2"
+    "marked": "2.1.3",
+    "marked-terminal": "4.1.1",
+    "neo-blessed": "0.2.0",
+    "parse-md": "2.0.4",
+    "recursive-readdir": "2.2.2"
   },
   "devDependencies": {
-    "chai": "^4.3.4",
-    "conventional-changelog-cli": "^2.1.1",
-    "conventional-recommended-bump": "^6.1.0",
-    "eslint": "^7.25.0",
-    "mocha": "^8.3.2"
+    "chai": "4.3.4",
+    "eslint": "7.31.0",
+    "mocha": "9.0.3"
   }
 }
