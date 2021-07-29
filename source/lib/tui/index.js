@@ -70,7 +70,7 @@ const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
     shownNotes = data.filter.filterByQuery(
       notes.filter(note => data.filter.filter(note, queryTag, includeHidden)),
       query,
-      0,
+      1,
     );
     shownNotes.sort((a, b) => data.sort.sort(a, b, sort));
     updateListBox(shownNotes, sort);

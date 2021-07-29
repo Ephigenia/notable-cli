@@ -76,7 +76,7 @@ function main(query = '', options = {}) {
       const shownNotes = data.filter.filterByQuery(
         notes.filter(note => data.filter.filter(note, options.tag, options.all)),
         query,
-        0
+        1
       );
       shownNotes.sort((a, b) => data.sort.sort(a, b, options.sort));
 
