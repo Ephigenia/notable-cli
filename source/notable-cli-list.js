@@ -73,7 +73,7 @@ function main(query = '', options = {}) {
         return tui(notes, query, options.sort, options.tag, options.all);
       }
       // filters the notes according to --search and --tag filter
-      const shownNotes = data.filter.filterByQuery(
+      let shownNotes = data.filter.filterByQuery(
         notes.filter(note => data.filter.filter(note, options.tag, options.all)),
         query,
         1

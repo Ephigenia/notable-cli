@@ -21,19 +21,20 @@ const options = [
  */
 function sort(a, b, field) {
   let modifier = v => v;
-  let sort = field.replace(/^-/, '');
-  if (sort !== field) {
+  let fieldname = field.replace(/^-/, '');
+  if (fieldname !== field) {
     modifier = v => -v;
   }
-  switch(sort) {
+  switch(fieldname) {
     case 'category':
       return modifier(String(a.category).localeCompare(String(b.category)));
     case 'score':
+      return modifier(a.score - b.score);
     case 'created':
     case 'modified':
-      if (!(a.metadata[String(sort)] instanceof Date)) return modifier(1);
-      if (!(b.metadata[String(sort)] instanceof Date)) return modifier(1);
-      return modifier(a.metadata[String(sort)] - b.metadata[String(sort)]);
+      if (!(a.metadata[String(fieldname)] instanceof Date)) return modifier(1);
+      if (!(b.metadata[String(fieldname)] instanceof Date)) return modifier(1);
+      return modifier(a.metadata[String(fieldname)] - b.metadata[String(fieldname)]);
     case 'title':
     default:
       return modifier(String(a.metadata.title).localeCompare(String(b.metadata.title)));
