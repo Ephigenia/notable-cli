@@ -52,10 +52,11 @@ describe('lib filter', () => {
 
   describe('search', () => {
     it('returns the notes ordered by score', () => {
+      // TODO optimize assertion here
       const result = filterByQuery(notes, 'customer problem');
       expect(result).to.have.length(3);
-      expect(result[0]).to.equal(notes[1]);
-      expect(result[1]).to.equal(notes[0]);
+      expect(result[0]).to.equal(notes[0]);
+      expect(result[1]).to.equal(notes[1]);
       expect(result[2]).to.equal(notes[2]);
     });
     it('returns only those notes with a minimum score', () => {
@@ -66,8 +67,8 @@ describe('lib filter', () => {
 
   describe('searchScore', () => {
     it('is higher with multiple matches', () => {
-      expect(searchScore(notes[1], 'customer problem')).to.equal(26.25);
-      expect(searchScore(notes[1], 'customer')).to.equal(19);
+      expect(searchScore(notes[1], 'customer problem')).to.equal(29);
+      expect(searchScore(notes[1], 'customer')).to.equal(20);
     });
   }); // searchScore
 }); // suite
