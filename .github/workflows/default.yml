@@ -1,3 +1,6 @@
+# SEE https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions
+on: [push, pull_request]
+
 jobs:
   # no need for audit or update-check packages
   # this is covered by renovate bot integration
