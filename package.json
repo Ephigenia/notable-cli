@@ -67,7 +67,7 @@
     "marked": "3.0.7",
     "marked-terminal": "4.2.0",
     "neo-blessed": "0.2.0",
-    "parse-md": "2.0.4",
+    "parse-md": "2.0.5",
     "recursive-readdir": "2.2.2"
   },
   "devDependencies": {
