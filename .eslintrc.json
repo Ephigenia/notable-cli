@@ -1,19 +1,18 @@
 {
-    "env": {
-      "node": true,
-      "mocha": true,
-      "es6": true
-    },
-    "parserOptions": {
-      "ecmaVersion": 9,
-      "sourceType": "module"
-    },
-    "extends": [
-      "eslint:recommended"
-    ],
-    "rules": {
-      "no-console": 0,
-      "semi": [1, "always"]
-    }
+  "env": {
+    "node": true,
+    "mocha": true,
+    "es6": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 9,
+    "sourceType": "module"
+  },
+  "extends": [
+    "eslint:recommended"
+  ],
+  "rules": {
+    "no-console": 0,
+    "semi": [1, "always"]
   }
-  
+}
