@@ -1,21 +1,19 @@
 #!/usr/bin/env node
-'use strict';
 
-const program = require('commander');
+import { Command } from 'commander';
+
+import config from './config.js';
+import tui from './lib/tui.js';
 
 const data = require('./lib/data');
-const pkg = require('./../package.json');
-const config = require('./config');
 const output = require('./lib/output');
 
-const tui = require('./lib/tui');
-
+const program = new Command();
 program
-  .version(pkg.version)
-  .arguments('[query]')
-  .description('list/show/filter notes', {
+  .arguments('[query]', {
     query: 'Optional search query to use'
   })
+  .description('list/show/filter notes')
   .addHelpText('after', `
 
 Examples:

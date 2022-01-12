@@ -4,6 +4,7 @@
   "version": "0.0.0-dev",
   "author": "Ephigenia M. Eichner",
   "license": "MIT",
+  "type": "module",
   "homepage": "https://github.com/Ephigenia/notable-cli/",
   "keywords": [
     "cli",
@@ -51,7 +52,7 @@
     "lint": "eslint source",
     "postversion": "git push && git push --tags",
     "preversion": "npm test && npm run lint && npm run test:outdated",
-    "start": "node $npm_package_main",
+    "start": "node source/notable-cli.js",
     "tdd": "npm run test -- --watch",
     "test:outdated": "npm outdated",
     "test:security": "npm audit",
