@@ -61,6 +61,7 @@ function main(query = '', options = {}) {
       options.sort = '-score';
     }
   }
+
   // start interactive mode
   if (options.interactive) {
     return tui(config.HOME_PATH, query, options.sort, options.tag, options.all);

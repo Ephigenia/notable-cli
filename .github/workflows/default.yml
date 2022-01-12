@@ -1,39 +1,52 @@
 # SEE https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions
+
+name: default
+
 on: [push, pull_request]
 
 jobs:
-  # no need for audit or update-check packages
-  # this is covered by renovate bot integration
 
   lint:
-    name: lint
+    name: Lint Code Base
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node: [14.x]
     steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node }}
-      - name: npm install
-        run: npm ci --no-optional
-      - name: lint
-        run: npm run -s lint
+    - uses: actions/checkout@v2
+      with:
+        # Full git history is needed to get a proper list of changed files within `super-linter`
+        fetch-depth: 0
+    - uses: github/super-linter/slim@v4
+      env:
+        DEFAULT_BRANCH: master
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        VALIDATE_ALL_CODEBASE: true
+        VALIDATE_JAVASCRIPT_ES: true
+        VALIDATE_EDITORCONFIG: true
+        VALIDATE_YAML: true
+        VALIDATE_BASH: true
+        VALIDATE_BASH_EXEC: true
+        FILTER_REGEX_EXCLUDE: CHANGELOG.md
 
   test:
-    needs: [lint]
     name: test
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node: [14.x, 16.x]
+    needs: [lint]
+
     steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node }}
-      - run: npm ci --no-optional
-      - run: npm test
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version-file: '.nvmrc'
+        cache: 'npm'
+    - run: npm ci --no-optional
+    - run: npm test
+    - name: Archive code coverage results
+      uses: actions/upload-artifact@v2
+      with:
+        name: code-coverage-report
+        path: coverage
+        retention-days: 30
+    - uses: vebr/jest-lcov-reporter@v0.2.1
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        lcov-file: ./coverage/lcov.info
+        update-comment: true
