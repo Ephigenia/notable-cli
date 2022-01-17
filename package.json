@@ -26,8 +26,7 @@
     }
   ],
   "engines": {
-    "node": ">=14",
-    "npm": ">=6.14"
+    "node": ">=16.0.0"
   },
   "repository": {
     "type": "git",
@@ -56,24 +55,24 @@
     "tdd": "npm run test -- --watch",
     "test:outdated": "npm outdated",
     "test:security": "npm audit",
-    "test": "mocha --check-leaks --exit \"./{,!(node_modules)/**}/*.test.js\"",
+    "test": "mocha --check-leaks --exit \"./source/**/*.test.js\"",
     "update": "npx npm-check --update --save-exact",
     "version": "npm run changelog && git add CHANGELOG.md"
   },
   "dependencies": {
     "ansi-colors": "4.1.1",
-    "commander": "8.2.0",
+    "commander": "8.3.0",
     "dayjs": "1.10.7",
     "handlebars": "4.7.7",
-    "marked": "3.0.7",
-    "marked-terminal": "4.2.0",
+    "marked": "4.0.10",
+    "marked-terminal": "5.0.0",
     "neo-blessed": "0.2.0",
-    "parse-md": "2.0.4",
+    "parse-md": "3.0.3",
     "recursive-readdir": "2.2.2"
   },
   "devDependencies": {
     "chai": "4.3.4",
-    "eslint": "8.0.0",
-    "mocha": "9.1.2"
+    "eslint": "8.6.0",
+    "mocha": "9.1.3"
   }
 }

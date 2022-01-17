@@ -1,15 +1,13 @@
 #!/usr/bin/env node
 'use strict';
 
-const program = require('commander');
-const fs = require('fs');
-const path = require('path');
+import { Command } from 'commander';
+import fs from 'node:fs';
+import path from 'node:path';
 
-const { renderTemplate } = require('./lib/renderTemplate');
-
-const data = require('./lib/data');
-const pkg = require('./../package.json');
-const config = require('./config');
+import { renderTemplate } from './lib/renderTemplate.js';
+import { open } from './lib/data/open.js';
+import config from './config.js';
 
 const DEFAULT_TEMPLATE = `---
 tags: [{{ tags }}]
@@ -21,27 +19,27 @@ modified: '{{ format modified }}'
 
 # {{ title }}
 `;
+const DEFAULT_TITLE = 'YYYYMMDD-HHMM Note';
 
+const program = new Command();
 program
-  .version(pkg.version)
-  .description('Creates a new note', {
+  .arguments('[title] [tags]', {
     title: 'title of the note to be created, YYYY-MM-DD and HH-MM would be replaced',
     tags: 'csv list of tags to add',
   })
-  .arguments('[title] [tags]')
-  ;
+  .description('Creates a new note')
+  .action(main)
+  .parseAsync();
 
-const DEFAULT_TITLE = 'YYYYMMDD-HHMM Note';
-
-function main(title = DEFAULT_TITLE, tags = '') {
+async function main(title = DEFAULT_TITLE, tags = '') {
   const now = new Date();
 
   // argument defaults and validation
   const renderedTitle = (title || DEFAULT_TITLE)
-    .replace(/YYYY-MM-DD/i, now.toISOString().substr(0, 10))
-    .replace(/YYYYMMDD/i, now.toISOString().substr(0, 10).replace(/-/g, ''))
-    .replace(/HH-MM/i, now.toISOString().substr(11, 5).replace(/:/g, '-'))
-    .replace(/HHMM/i, now.toISOString().substr(11, 5).replace(/:/g, ''));
+    .replace(/YYYY-MM-DD/i, now.toISOString().substring(0, 10))
+    .replace(/YYYYMMDD/i, now.toISOString().substring(0, 10).replace(/-/g, ''))
+    .replace(/HH-MM/i, now.toISOString().substring(11, 5).replace(/:/g, '-'))
+    .replace(/HHMM/i, now.toISOString().substring(11, 5).replace(/:/g, ''));
 
   // filename
   const basename = renderedTitle;
@@ -66,6 +64,7 @@ function main(title = DEFAULT_TITLE, tags = '') {
         'The given title would result in a hidden file starting with a dot.'
       );
     }
+
     if (fs.existsSync(filename)) {
       // check if file already exists
       throw new Error(
@@ -84,7 +83,7 @@ function main(title = DEFAULT_TITLE, tags = '') {
 
   let templateSource = DEFAULT_TEMPLATE;
   if (process.stdin.isTTY === undefined) {
-    templateSource = fs.readFileSync("/dev/stdin", "utf-8");
+    templateSource = await fs.promises.readFile('/dev/stdin', 'utf-8');
   }
 
   // template
@@ -96,10 +95,6 @@ function main(title = DEFAULT_TITLE, tags = '') {
     username: config.USERNAME,
   });
 
-  fs.writeFileSync(filename, content);
-  data.open([filename]);
+  await fs.promises.writeFile(filename, content);
+  open([filename]);
 }
-
-program
-  .action((title, tags) => main(title, tags, program.opts()))
-  .parse(process.argv);

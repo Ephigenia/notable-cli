@@ -1,5 +1,5 @@
-const Handlebars = require('handlebars');
-const dayjs = require('dayjs');
+import Handlebars from 'handlebars';
+import dayjs from 'dayjs';
 
 Handlebars.registerHelper('toISOString', (input) => {
   return new Handlebars.SafeString(input.toISOString());
@@ -16,13 +16,9 @@ Handlebars.registerHelper('format', (input, format) => {
  * @param {string} source
  * @param {object<string, any>} data
  */
-function renderTemplate(source = '', data = {}) {
+export function renderTemplate(source = '', data = {}) {
   const template = Handlebars.compile(source);
   // add default variable values
   const vars = Object.assign(data, {});
   return template(vars);
 }
-
-module.exports = {
-  renderTemplate,
-};

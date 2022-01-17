@@ -1,7 +1,7 @@
-const { expect } = require('chai');
+import { expect } from 'chai';
+import { renderTemplate } from './renderTemplate.js';
 
 describe('renderTemplate', () => {
-  const { renderTemplate } = require('./renderTemplate');
 
   it('returns the rendered template', () => {
     const result = renderTemplate('Hello my Name is {{ name }}', {

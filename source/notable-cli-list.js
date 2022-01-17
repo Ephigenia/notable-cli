@@ -3,10 +3,11 @@
 import { Command } from 'commander';
 
 import config from './config.js';
-import tui from './lib/tui.js';
-
-const data = require('./lib/data');
-const output = require('./lib/output');
+import tui from './lib/tui/index.js';
+import * as data from './lib/data/data.js';
+import * as filter from './lib/data/filter.js';
+import * as sort from './lib/data/sort.js';
+import { FORMAT, output } from './lib/output.js';
 
 const program = new Command();
 program
@@ -50,9 +51,12 @@ Examples:
   .option('-t, --tag <tag>', 'show notes having the given tag, case-sensitive', (val) => {
     return val.split(/\s*,\s*/).map(v => v.trim()).filter(v => v);
   })
-  ;
+  .action(main)
+  .parseAsync();
 
-function main(query = '', options = {}) {
+function main(query = '') {
+  const options = program.opts();
+
   if (!options.sort) {
     options.sort = '-created';
     if (query) {
@@ -66,31 +70,24 @@ function main(query = '', options = {}) {
   }
 
   // normal one-time execution mode
-  return data.readFromPath(config.HOME_PATH)
+  return data.read(config.HOME_PATH)
     .then(notes => {
-      if (options.interactive) {
-        return tui(notes, query, options.sort, options.tag, options.all);
-      }
       // filters the notes according to --search and --tag filter
-      let shownNotes = data.filter.filterByQuery(
-        notes.filter(note => data.filter.filter(note, options.tag, options.all)),
+      let shownNotes = filter.filterByQuery(
+        notes.filter(note => filter.filter(note, options.tag, options.all)),
         query,
         1
       );
-      shownNotes.sort((a, b) => data.sort.sort(a, b, options.sort));
+      shownNotes.sort((a, b) => sort.sort(a, b, options.sort));
 
       let format = null;
       if (options.oneline) {
-        format = 'oneline';
+        format = FORMAT.ONELINE;
       } else if (options.full) {
-        format = 'full';
+        format = FORMAT.FULL;
       } else if (options.json) {
-        format = 'json';
+        format = FORMAT.JSON;
       }
       console.log(output(format, shownNotes));
     });
 }
-
-program
-  .action((query) => main(query, program.opts()))
-  .parse(process.argv);

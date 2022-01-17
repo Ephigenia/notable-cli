@@ -1,13 +1,9 @@
-'use strict';
+import * as marked from 'marked';
+import TerminalRenderer from 'marked-terminal';
 
-const marked = require('marked');
-const TerminalRenderer = require('marked-terminal');
-
-function render(content) {
+export function render(content) {
   marked.setOptions({
     renderer: new TerminalRenderer(),
   });
-  return marked(content);
+  return marked.marked(content);
 }
-
-module.exports = render;
