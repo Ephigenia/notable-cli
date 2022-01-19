@@ -28,11 +28,7 @@ Features
 - Read from single flexible storage directory, search, filter and list notes
 - List tags
 - Use your standard vavorite $EDITOR to edit notes
-
 - compatible with "notes" created with [notable](https://notable.md) or [notes-cli](https://github.com/rhysd/notes-cli)
-
-Other ideas & planned features can be found in the [wiki](./wiki). If something doesn’t work please [create a new issue](https://github.com/Ephigenia/notable-cli/issues).
-
 
 Installation
 ===============================================================================
