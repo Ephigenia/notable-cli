@@ -4,6 +4,7 @@ import blessed from 'neo-blessed';
 
 import { style } from './style.js';
 import * as data from './../data/data.js';
+import { open } from './../data/open.js';
 import * as filter from './../data/filter.js';
 import * as dSort from './../data/sort.js';
 import { render as dRender } from './../data/render.js';
@@ -198,7 +199,7 @@ export default function(notesHomePath, query, sort, queryTag, includeHidden) {
 
   function openNote(index) {
     const note = shownNotes[index];
-    if (note) data.open([note.filename]);
+    if (note) open([note.filename]);
   }
 
   // keyboard control
