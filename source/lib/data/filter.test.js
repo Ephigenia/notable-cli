@@ -1,10 +1,7 @@
-'use strict';
-
-const expect = require('chai').expect;
+import { expect } from 'chai';
+import { splitSearchQuery, searchScore, filterByQuery } from './filter.js';
 
 describe('lib filter', () => {
-  const { splitSearchQuery, searchScore, filterByQuery } = require('./filter');
-
   const notes = [
     {
       metadata: {

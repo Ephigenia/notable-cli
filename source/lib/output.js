@@ -1,9 +1,13 @@
-'use strict';
+import * as colors from 'ansi-colors';
 
-const colors = require('ansi-colors');
+import { escapeFilename } from './escapeFilename.js';
+import { render } from './data/render.js';
 
-const escapeFilename = require('./escapeFilename');
-const render = require('./data/render');
+export const FORMAT = {
+  ONELINE: 'oneline',
+  FULL: 'full',
+  JSON: 'JSON',
+};
 
 function full(notes) {
   const data = notes.map(note => [
@@ -28,19 +32,19 @@ function oneline(notes) {
   return data.map(row => row.join('\t')).join('\n');
 }
 
-module.exports = function(format, notes) {
+export function output(format, notes) {
   switch(format) {
-    case 'oneline': {
+    case FORMAT.ONELINE: {
       return oneline(notes);
     }
-    case 'full': {
+    case FORMAT.FULL: {
       return full(notes);
     }
-    case 'json': {
+    case FORMAT.JSON: {
       return JSON.stringify(notes);
     }
     default: {
       return notes.map(note => escapeFilename(note.filename)).join("\n");
     }
   }
-};
+}

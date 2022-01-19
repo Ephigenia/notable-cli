@@ -1,19 +1,12 @@
-'use strict';
-
-const fg = 'grey';
-const active = 'blue';
-
-module.exports = function() {
-  return {
-    fg: fg,
-    focus: {
-      fg: 'white',
-      border: {
-        fg: active,
-      },
+export const style = {
+  fg: 'grey',
+  focus: {
+    fg: 'white',
+    border: {
+      fg: 'blue',
     },
-    scrollbar: {
-      bg: fg,
-    },
-  };
+  },
+  scrollbar: {
+    bg: 'grey',
+  },
 };

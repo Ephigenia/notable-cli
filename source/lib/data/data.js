@@ -1,17 +1,13 @@
 'use strict';
 
-const fs = require('fs');
-const util = require('util');
-const path = require('path');
-const parseMD = require('parse-md').default;
-const recursiveReadDir = require('recursive-readdir');
+import { readFile, stat } from 'node:fs/promises';
+import { basename, dirname } from 'node:path';
 
-const readFileP = util.promisify(fs.readFile);
-const recursiveReadDirP = util.promisify(recursiveReadDir);
+import parseMD from 'parse-md';
+import recursiveReadDir from 'recursive-readdir';
 
 function fileFilter(file, stats) {
-  const basename = path.basename(file);
-  return !stats.isDirectory() && !basename.match(/\.md$/);
+  return !stats.isDirectory() && !basename(file).match(/\.md$/);
 }
 
 /**
@@ -41,14 +37,13 @@ function fileFilter(file, stats) {
  * @param {string} basePath
  * @returns {Promise<ParsedNote>}
  */
-async function readNote(filename, basePath) {
-  const basename = path.basename(filename);
-  const { mtime, birthtime } = fs.statSync(filename);
+export async function readNote(filename, basePath) {
+  const { mtime, birthtime } = await stat(filename);
   const base = {
-    hidden: /^\./.test(basename),
+    hidden: /^\./.test(basename(filename)),
     filename,
     content: '',
-    category: path.dirname(filename).substr(basePath.length + 1) || null,
+    category: dirname(filename).substring(basePath.length + 1) || null,
     metadata: {
       created: birthtime,
       modified: mtime,
@@ -56,7 +51,8 @@ async function readNote(filename, basePath) {
       tags: [],
     }
   };
-  return readFileP(filename, 'utf8')
+
+  return readFile(filename, 'utf8')
     .then(content => {
       base.content = content;
       return parseMD(content);
@@ -100,13 +96,7 @@ async function readNote(filename, basePath) {
  * @param {string} path root path of notes to be read
  * @returns {Promise<ParsedNote[]>}
  */
-async function read(path) {
-  return recursiveReadDirP(path, [fileFilter])
-    .then(files => Promise.all(files.map((file) => readNote(file, path))));
+export async function read(path) {
+  const files = await recursiveReadDir(path, [fileFilter]);
+  return Promise.all(files.map(file => readNote(file, path)));
 }
-
-
-module.exports = {
-  read,
-  readNote,
-};

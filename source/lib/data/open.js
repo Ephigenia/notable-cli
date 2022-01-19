@@ -1,11 +1,13 @@
-'use strict';
+import { spawnSync } from 'child_process';
 
-const { spawnSync } = require('child_process');
+import config from './../../config.js';
 
-const config = require('./../../config');
-
-function open(notes) {
-  spawnSync(config.EDITOR, notes);
+/**
+ * Open the given notes in the systems standard $EDITOR
+ *
+ * @param {string[]} filename
+ * @return {void}
+ */
+export function open(filenames) {
+  spawnSync(config.EDITOR, filenames);
 }
-
-module.exports = open;

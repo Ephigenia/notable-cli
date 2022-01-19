@@ -1,15 +1,18 @@
 #!/usr/bin/env node
-'use strict';
+import { Command } from 'commander';
+import { readFile } from 'node:fs/promises';
 
-const program = require('commander');
+let package_ = JSON.parse(
+  await readFile(
+    new URL('./../package.json', import.meta.url)
+  )
+);
 
-const pkg = require('./../package.json');
-
+const program = new Command();
 program
-  .version(pkg.version)
+  .version(package_.version)
+  .description(`${package_.description}`)
   .command('new', 'create new note')
   .command('list', 'list notes', { isDefault: true }).alias('ls')
   .command('tags', 'list tags')
-  .description(`${pkg.description}`);
-
-program.parse(process.argv);
+  .parse();

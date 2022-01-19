@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * split query into "words" and only return true when all words are found
  * in the query, this way each part of the query adds another AND condition
@@ -7,10 +5,10 @@
  *
  * @see https://stackoverflow.com/questions/4031900
  *
- * @param {String} query - required search string
+ * @param {String} query - search string
  * @returns {Array<string>}
  */
-function splitSearchQuery(query) {
+export function splitSearchQuery(query) {
   // split query by words, but keep quoted parts and paths intact
   let queryParts = String(query).match(/[\w/]+|"[^"]*"/g) || [];
   queryParts = queryParts
@@ -29,7 +27,7 @@ function splitSearchQuery(query) {
  * @param {import('./data').ParsedNote} note the note
  * @param {string} query
  */
-function searchScore(note, query) {
+export function searchScore(note, query) {
   let score = 0;
 
   let terms = splitSearchQuery(query);
@@ -47,12 +45,12 @@ function searchScore(note, query) {
   return score;
 }
 
-function scoredSearch(notes, query) {
+export function scoredSearch(notes, query) {
   notes.forEach(note => note.score = searchScore(note, query));
   return notes;
 }
 
-function filterByQuery(notes, query, minimumPercentile = 0) {
+export function filterByQuery(notes, query, minimumPercentile = 0) {
   if (!query) return notes;
   if (!notes.length) return notes;
 
@@ -70,7 +68,7 @@ function filterByQuery(notes, query, minimumPercentile = 0) {
  *
  * // TODO increase position of result when search has a better match
  *
- * @param {import('./data').ParsedNote} note - required note that should be
+ * @param {import('./data').ParsedNote} note - note that should be
  *   filtered
  * @param {String} [query] - optional query string split into words and searching
  *   case-insensitive in tags, title, content and filename
@@ -80,7 +78,7 @@ function filterByQuery(notes, query, minimumPercentile = 0) {
  *   are considerd to be "hidden"
  * @returns {boolean}
  */
-function filter(note, tags = null, showHidden = false) {
+export function filter(note, tags = null, showHidden = false) {
   if (note.hidden && showHidden === false) return false;
 
   // search in tags of note
@@ -91,10 +89,3 @@ function filter(note, tags = null, showHidden = false) {
 
   return true;
 }
-
-module.exports = {
-  filter,
-  filterByQuery,
-  splitSearchQuery,
-  searchScore,
-};

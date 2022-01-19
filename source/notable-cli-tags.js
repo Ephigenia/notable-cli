@@ -1,21 +1,20 @@
 #!/usr/bin/env node
-'use strict';
+import { Command } from 'commander';
 
-const program = require('commander');
+import config from './config.js';
+import * as data from './lib/data/data.js';
 
-const data = require('./lib/data');
-const pkg = require('./../package.json');
-const config = require('./config');
-
+const program = new Command();
 program
-  .version(pkg.version)
   .description('List all values')
   // TODO add description with examples for: grep, sort, unique, lowercase
   .option('-f, --full', 'full output', false)
-  ;
+  .action(main)
+  .parseAsync();
 
-async function main(options = {}) {
-  const notes = await data.readFromPath(config.HOME_PATH);
+async function main() {
+  const options = program.opts();
+  const notes = await data.read(config.HOME_PATH);
   let values = new Set();
   if (options.full) {
     notes
@@ -34,7 +33,3 @@ async function main(options = {}) {
   values.sort((a, b) => String(a).localeCompare(String(b)));
   values.forEach(tag => console.log(tag));
 }
-
-program
-  .action(() => main(program.opts()))
-  .parse(process.argv);

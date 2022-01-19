@@ -1,7 +1,5 @@
-'use strict';
-
-const assert = require('assert');
-const os = require('os');
+import assert from 'node:assert';
+import os from 'node:os';
 
 const config = {
   HOME_PATH: process.env.NOTABLE_CLI_HOME ||
@@ -27,4 +25,4 @@ assert(
   `,
 );
 
-module.exports = config;
+export default config;

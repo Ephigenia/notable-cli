@@ -1,11 +1,15 @@
 'use strict';
 
-const blessed = require('neo-blessed');
+import blessed from 'neo-blessed';
 
-const style = require('./style');
-const data = require('./../data');
+import { style } from './style.js';
+import * as data from './../data/data.js';
+import { open } from './../data/open.js';
+import * as filter from './../data/filter.js';
+import * as dSort from './../data/sort.js';
+import { render as dRender } from './../data/render.js';
 
-const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
+export default function(notesHomePath, query, sort, queryTag, includeHidden) {
   // view elements
   // -------------
   const screen = blessed.screen({
@@ -21,7 +25,7 @@ const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
     width: '100%',
     height: 3,
     border: { type: 'line' },
-    style: style(),
+    style: { ...style },
     value: query,
     keys: true,
     mouse: true,
@@ -35,7 +39,7 @@ const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
     height: '50%-3',
     border: { type: 'line' },
     align: 'left',
-    style: Object.assign(style(), { header: { bold: true, fg: 'white' }}),
+    style: { ...style, header: { bold: true, fg: 'white' }},
     keys: true,
     mouse: true,
     scrollable: true,
@@ -51,7 +55,7 @@ const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
     height: '50%',
     border: { type: 'line' },
     align: 'left',
-    style: style(),
+    style: { ...style },
     keys: true,
     scrollable: true,
     scrollbar: true,
@@ -61,18 +65,18 @@ const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
   let notes = [];
   let shownNotes = [];
   const reloadData = function(query, sort) {
-    return data.readFromPath(notesHomePath)
+    return data.read(notesHomePath)
       .then(list => notes = list)
       .then(() => updateViews(query, sort));
   };
 
   const updateViews = async function(query, sort) {
-    shownNotes = data.filter.filterByQuery(
-      notes.filter(note => data.filter.filter(note, queryTag, includeHidden)),
+    shownNotes = filter.filterByQuery(
+      notes.filter(note => filter.filter(note, queryTag, includeHidden)),
       query,
       1,
     );
-    shownNotes.sort((a, b) => data.sort.sort(a, b, sort));
+    shownNotes.sort((a, b) => dSort.sort(a, b, sort));
     updateListBox(shownNotes, sort);
   };
 
@@ -142,7 +146,7 @@ const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
   };
 
   function setSortOrder(index) {
-    const sortOptions = data.sort.options;
+    const sortOptions = dSort.options;
     if (index >= sortOptions.length) {
       index = 0;
     } else if (index < 0) {
@@ -188,14 +192,14 @@ const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
       return Promise.resolve();
     } else {
       contentBox.setLabel(selectedNote.filename);
-      contentBox.setContent(data.render(selectedNote.content));
+      contentBox.setContent(dRender(selectedNote.content));
       return screen.render();
     }
   }
 
   function openNote(index) {
     const note = shownNotes[index];
-    if (note) data.open([note.filename]);
+    if (note) open([note.filename]);
   }
 
   // keyboard control
@@ -266,6 +270,4 @@ const tui = function(notesHomePath, query, sort, queryTag, includeHidden) {
   searchBox.focus();
   reloadData(query, sort);
   screen.render();
-};
-
-module.exports = tui;
+}

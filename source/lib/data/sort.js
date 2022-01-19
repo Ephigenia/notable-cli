@@ -1,6 +1,4 @@
-'use strict';
-
-const options = [
+export const options = [
   '-score',
   'score',
   '-created',
@@ -19,7 +17,7 @@ const options = [
  * @param {string} field
  * @return {Number}
  */
-function sort(a, b, field) {
+export function sort(a, b, field) {
   let modifier = v => v;
   let fieldname = field.replace(/^-/, '');
   if (fieldname !== field) {
@@ -40,8 +38,3 @@ function sort(a, b, field) {
       return modifier(String(a.metadata.title).localeCompare(String(b.metadata.title)));
   }
 }
-
-module.exports = {
-  sort,
-  options,
-};
