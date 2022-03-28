@@ -61,18 +61,18 @@
   },
   "dependencies": {
     "ansi-colors": "4.1.1",
-    "commander": "8.3.0",
-    "dayjs": "1.10.7",
+    "commander": "9.1.0",
+    "dayjs": "1.11.0",
     "handlebars": "4.7.7",
-    "marked": "4.0.10",
-    "marked-terminal": "5.0.0",
+    "marked": "4.0.12",
+    "marked-terminal": "5.1.1",
     "neo-blessed": "0.2.0",
     "parse-md": "3.0.3",
     "recursive-readdir": "2.2.2"
   },
   "devDependencies": {
-    "chai": "4.3.5",
-    "eslint": "8.7.0",
-    "mocha": "9.2.0"
+    "chai": "4.3.6",
+    "eslint": "8.12.0",
+    "mocha": "9.2.2"
   }
 }
