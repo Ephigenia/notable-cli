@@ -4,6 +4,7 @@
 import { Command } from 'commander';
 import fs from 'node:fs';
 import path from 'node:path';
+import sanitizeFilename from 'sanitize-filename';
 
 import { renderTemplate } from './lib/renderTemplate.js';
 import { open } from './lib/data/open.js';
@@ -41,10 +42,14 @@ async function main(title = DEFAULT_TITLE, tags = '') {
     .replace(/HH-MM/i, now.toISOString().substring(11, 5).replace(/:/g, '-'))
     .replace(/HHMM/i, now.toISOString().substring(11, 5).replace(/:/g, ''));
 
-  // filename
-  const basename = renderedTitle;
-  const directory = path.join(config.HOME_PATH, path.dirname(basename));
-  const filename = path.join(directory, path.basename(basename)) + '.md';
+  const basename = sanitizeFilename(path.basename(renderedTitle), { replacement: '-'});
+  const dirname = path.join(config.HOME_PATH, path.dirname(renderedTitle));
+  // make sure the actual filename is properly escaped
+  const filename = path.join(dirname, basename + '.md');
+
+  if (!basename) {
+    throw new Error(`Unable to create a file with an empty filename in ${JSON.stringify(dirname)}`);
+  }
 
   // sanitize tags (trim), remove empty ones
   tags = tags.split(/\s*[,;]+\s*/gi);

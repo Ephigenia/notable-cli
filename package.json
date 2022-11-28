@@ -68,7 +68,8 @@
     "marked-terminal": "5.1.1",
     "neo-blessed": "0.2.0",
     "parse-md": "3.0.3",
-    "recursive-readdir": "2.2.3"
+    "recursive-readdir": "2.2.3",
+    "sanitize-filename": "1.6.3"
   },
   "devDependencies": {
     "chai": "4.3.7",
