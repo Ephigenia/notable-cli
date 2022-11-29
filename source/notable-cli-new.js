@@ -42,43 +42,36 @@ async function main(title = DEFAULT_TITLE, tags = '') {
     .replace(/HH-MM/i, now.toISOString().substring(11, 5).replace(/:/g, '-'))
     .replace(/HHMM/i, now.toISOString().substring(11, 5).replace(/:/g, ''));
 
-  const basename = sanitizeFilename(path.basename(renderedTitle), { replacement: '-'});
-  const dirname = path.join(config.HOME_PATH, path.dirname(renderedTitle));
-  // make sure the actual filename is properly escaped
-  const filename = path.join(dirname, basename + '.md');
+  // Escape all characters in the title which are not allowed in filenames
+  const titleSanitized = sanitizeFilename(path.basename(renderedTitle), { replacement: '-'}).trim();
+  const titleDirectory = path.dirname(renderedTitle);
+  const directory = path.join(config.HOME_PATH, titleDirectory);
+  const filename = path.join(directory, titleSanitized + '.md');
 
-  if (!basename) {
-    throw new Error(`Unable to create a file with an empty filename in ${JSON.stringify(dirname)}`);
-  }
-
-  // sanitize tags (trim), remove empty ones
+  // split tags string into separate strings
   tags = tags.split(/\s*[,;]+\s*/gi);
-  // remove the notable-cli home directory and split the other parts of the
-  // directory and add them as tags
-  if (path.dirname(basename) !== '.') {
-    path.dirname(basename).split('/').map(tag => tags.push(tag));
-  }
-  tags = tags.map(tag => tag.trim()).filter(v => v);
-  // make tags unique
-  tags = Array.from(new Set(tags));
+  // split the title into tags
+  tags = [...tags, ...titleDirectory.split(path.sep)];
+  // sanitize tags (trim), remove empty ones, unique
+  tags = Array.from(new Set(tags.map(tag => tag.trim()).filter(tag => tag)));
 
   try {
-    // check if title doesn’t contain a dot as first character or slashes
-    if (basename.match(/^\./)) {
+    if (!titleSanitized) {
+      throw new Error(`Unable to create a file with an empty filename in ${JSON.stringify(directory)}`);
+    } else if (titleSanitized.match(/^\./)) {
+      // check if title doesn’t contain a dot as first character or slashes
       throw new Error(
         'The given title would result in a hidden file starting with a dot.'
       );
-    }
-
-    if (fs.existsSync(filename)) {
+    } else if (fs.existsSync(filename)) {
       // check if file already exists
       throw new Error(
         `The file "${filename}" already exists and cannot be overwritten. ` +
         'Considering modifying this note instead'
       );
     }
-    if (title.match(/\//)) {
-      // create sub-directory when the title contains slashes
+    // create sub-directory when title contains path seperators
+    if (titleDirectory.indexof('/') > -1) {
       fs.mkdirSync(directory, { recursive: true });
     }
   } catch (err) {
