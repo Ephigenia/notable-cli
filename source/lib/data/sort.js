@@ -1,14 +1,14 @@
 export const options = [
   '-score',
   'score',
-  '-created',
-  'created',
   'title',
   '-title',
-  '-modified',
-  'modified',
   '-category',
   'category',
+  '-created',
+  'created',
+  '-modified',
+  'modified',
 ];
 
 /**

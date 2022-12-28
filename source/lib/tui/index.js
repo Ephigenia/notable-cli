@@ -9,8 +9,6 @@ import * as filter from './../data/filter.js';
 import * as dSort from './../data/sort.js';
 import { render as dRender } from './../data/render.js';
 
-console.log(data.sort);
-process.exit();
 
 export default function(notesHomePath, query, sort, queryTag, includeHidden) {
   // view elements
@@ -84,11 +82,11 @@ export default function(notesHomePath, query, sort, queryTag, includeHidden) {
   };
 
   const listBoxTableheader = function(sort) {
-    const DESC = ' ⬆';
-    const ASC = ' ⬇';
+    const DESC = '⬆';
+    const ASC = '⬇';
     const tableHeader = [[
       'Title' + ((sort === '-title') ? DESC : ((sort === 'title') ? ASC : '')),
-      'Tags',
+      'Tags' + ((sort === '-category' ? DESC : (sort === 'category' ? ASC : ''))),
       'Created' + ((sort === '-created' ? DESC : (sort === 'created' ? ASC : ''))),
       'Age' + ((sort === '-modified' ? DESC : (sort === 'modified' ? ASC : ''))),
       'Score' + ((sort === '-score' ? DESC : (sort === 'score' ? ASC : ''))),
@@ -106,8 +104,8 @@ export default function(notesHomePath, query, sort, queryTag, includeHidden) {
   const listBoxNoteRow = function(note) {
     const { modified, created, title, tags } = note.metadata || {};
     const columns = [
-      String(title) || '',
-      tags.join(','),
+      String(title || ''),
+      tags.join(' '),
       '',
       '',
       String(note.metadata.score),
@@ -138,18 +136,18 @@ export default function(notesHomePath, query, sort, queryTag, includeHidden) {
     );
 
     const COLS = process.stdout.columns;
-    const lastColumnWidth = 24;
+    const widths = [16, 8, 8];
+    const fixedSum = widths.reduce((a, c) => a + c, 0);
     const colWidths = [
-      Math.round((COLS - lastColumnWidth - 7) * 0.35),
-      Math.round((COLS - lastColumnWidth - 7) * 0.45),
-      lastColumnWidth,
-      7
+      Math.round((COLS - fixedSum) * 0.35),
+      Math.round((COLS - fixedSum) * 0.45),
+      ...widths,
     ];
 
     const ELLIPSIS = '…';
-    // TableList doesn’t add line breaks for auto-breaking too long values
-    // in a table column
-    // automatically limit the lines to the column widths if they are longer
+    // TableList doesn’t add line breaks for auto-breaking too long values in a
+    // table column automatically limit the lines to the column widths if they
+    // are longer
     table = table.map((row) => row.map((columnValue, columnIndex) => {
       const columnWidth = colWidths[columnIndex];
       if (columnValue.length > columnWidth) {
@@ -227,16 +225,16 @@ export default function(notesHomePath, query, sort, queryTag, includeHidden) {
   });
   screen.key(['s'], () => {
     // previous sort order
-    setSortOrder(data.sort.options.indexOf(sort) + 1);
+    setSortOrder(dSort.options.indexOf(sort) + 1);
   });
   screen.key(['S-s'], () => {
     // next sort order
-    setSortOrder(data.sort.options.indexOf(sort) - 1);
+    setSortOrder(dSort.options.indexOf(sort) - 1);
   });
   screen.key(['C-e'], () => {
     // scroll down
     listBox.select(notes.length - 1);
-    listBox.setScroll(notes.length -1 );
+    listBox.setScroll(notes.length - 1);
   });
   screen.key(['C-y'], () => {
     // scroll up
