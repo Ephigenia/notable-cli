@@ -46,7 +46,7 @@ export function searchScore(note, query) {
 }
 
 export function scoredSearch(notes, query) {
-  notes.forEach(note => note.score = searchScore(note, query));
+  notes.forEach(note => note.metadata.score = searchScore(note, query));
   return notes;
 }
 
@@ -55,12 +55,12 @@ export function filterByQuery(notes, query, minimumPercentile = 0) {
   if (!notes.length) return notes;
 
   const scoredNotes = scoredSearch(notes, query);
-  const scores = scoredNotes.map(({score}) => score);
+  const scores = scoredNotes.map(note => note.metadata.score);
   const scoreMax = Math.max(...scores);
 
   // remove the notes which don’t meet to be in the percentile of score
   return scoredNotes
-    .filter(({ score }) => score >= scoreMax * minimumPercentile / 100);
+    .filter((note) => note.metadata.score >= scoreMax * minimumPercentile / 100);
 }
 
 /**

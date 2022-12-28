@@ -18,16 +18,17 @@ function fileFilter(file, stats) {
  * @property {Array<String>} tags
  * @property {String} title
  * @property {String} [author]
+ * @property {Number} score
  */
 
 /**
  * @typedef ParsedNote
  * @type Object
- * @property {Object} NoteMetadata
+ * @property {NoteMetadata} metadata
  *   object containing the parsed metadata
  * @property {String} filename - full path to the note’s file
  * @property {String} category - relative path to the file
- * @property {content} Buffer - already readable buffer of the file’s content
+ * @property {Buffer} content - already readable buffer of the file’s content
  *   without the metadata
  * @property {Boolean} hidden - set to true when the file/note is hidden
  */
@@ -47,8 +48,9 @@ export async function readNote(filename, basePath) {
     metadata: {
       created: birthtime,
       modified: mtime,
-      title: basename,
+      score: 0,
       tags: [],
+      title: basename,
     }
   };
 

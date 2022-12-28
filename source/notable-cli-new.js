@@ -57,7 +57,9 @@ async function main(title = DEFAULT_TITLE, tags = '') {
 
   try {
     if (!titleSanitized) {
-      throw new Error(`Unable to create a file with an empty filename in ${JSON.stringify(directory)}`);
+      throw new Error(
+        `Unable to create a file with an empty filename in ${JSON.stringify(directory)}`
+      );
     } else if (titleSanitized.match(/^\./)) {
       // check if title doesn’t contain a dot as first character or slashes
       throw new Error(
@@ -71,7 +73,7 @@ async function main(title = DEFAULT_TITLE, tags = '') {
       );
     }
     // create sub-directory when title contains path seperators
-    if (titleDirectory.indexof('/') > -1) {
+    if (titleDirectory.indexOf('/') > -1) {
       fs.mkdirSync(directory, { recursive: true });
     }
   } catch (err) {

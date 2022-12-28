@@ -27,7 +27,7 @@ export function sort(a, b, field) {
     case 'category':
       return modifier(String(a.category).localeCompare(String(b.category)));
     case 'score':
-      return modifier(a.score - b.score);
+      return modifier(a.metadata.score - b.metadata.score);
     case 'created':
     case 'modified':
       if (!(a.metadata[String(fieldname)] instanceof Date)) return modifier(1);

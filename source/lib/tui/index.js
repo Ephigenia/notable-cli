@@ -86,33 +86,46 @@ export default function(notesHomePath, query, sort, queryTag, includeHidden) {
     const tableHeader = [[
       'Title' + ((sort === '-title') ? DESC : ((sort === 'title') ? ASC : '')),
       'Tags',
-      [
-        'Created' + ((sort === '-created' ? DESC : (sort === 'created' ? ASC : ''))),
-        'Age' + ((sort === '-modified' ? DESC : (sort === 'modified' ? ASC : ''))),
-        'Score' + ((sort === '-score' ? DESC : (sort === 'score' ? ASC : ''))),
-      ].join(' / '),
+      'Created' + ((sort === '-created' ? DESC : (sort === 'created' ? ASC : ''))),
+      'Age' + ((sort === '-modified' ? DESC : (sort === 'modified' ? ASC : ''))),
+      'Score' + ((sort === '-score' ? DESC : (sort === 'score' ? ASC : ''))),
     ]];
     return tableHeader;
   };
 
+  const ageInDays = function(date) {
+    return (Date.now() - date.getTime()) / 1000 / 3600 / 24;
+  };
+
+  /**
+   * @param {import('../data/data').ParsedNote} note
+   */
   const listBoxNoteRow = function(note) {
     const { modified, created, title, tags } = note.metadata || {};
     const columns = [
       String(title) || '',
       tags.join(','),
       '',
+      '',
+      String(note.metadata.score),
     ];
+
     // every var can contain a variable, not sure if it’s a instance of Date
     if (created instanceof Date) {
       columns[2] = created.toJSON().replace(/T|:[0-9.]+Z$/g, ' ').trim();
     }
     const lastChange = modified || created;
     if (lastChange instanceof Date) {
-      columns[2] += ' / ' + Math.round((Date.now() - lastChange.getTime()) / 1000 / 3600 / 24).toFixed(0);
+      columns[3] = Math.round(ageInDays(lastChange)).toFixed(0);
     }
     return columns;
   };
 
+  /**
+   *
+   * @param {import('../data/data').ParsedNote} note
+   * @param {string} sort
+   */
   const updateListBox = function(notes, sort) {
     listBox.setLabel(`Notes (${notes.length})`);
 
@@ -124,9 +137,10 @@ export default function(notesHomePath, query, sort, queryTag, includeHidden) {
     const COLS = process.stdout.columns;
     const lastColumnWidth = 24;
     const colWidths = [
-      Math.round((COLS - lastColumnWidth) * 0.35),
-      Math.round((COLS - lastColumnWidth) * 0.45),
+      Math.round((COLS - lastColumnWidth - 7) * 0.35),
+      Math.round((COLS - lastColumnWidth - 7) * 0.45),
       lastColumnWidth,
+      7
     ];
 
     const ELLIPSIS = '…';
@@ -243,7 +257,7 @@ export default function(notesHomePath, query, sort, queryTag, includeHidden) {
     // focus previous pane
     screen.focusNext();
   });
-  screen.key(['shift-tab'], () => {
+  screen.key(['S-tab'], () => {
     // focus next pane
     screen.focusPrevious();
   });
