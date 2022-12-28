@@ -1,4 +1,4 @@
-Simple to use jekyll-markdown parsing note-taking app for the command line and your favorite editor and unix tools.
+Simple to use jekyll-markdown parsing note-taking app for the command line and your favorite editor and Unix tools.
 
 **Package is still in development and testing. There may be breaking changes.**
 
@@ -25,9 +25,10 @@ Features
 ===============================================================================
 
 - Create, edit, manage and search text-based notes using markdown
-- Read from single flexible storage directory, search, filter and list notes
+Read from a single flexible storage directory, search, filter and list notes
 - List tags
-- Use your standard vavorite $EDITOR to edit notes
+- Use your standard v
+- avorite $EDITOR to edit notes
 - compatible with "notes" created with [notable](https://notable.md) or [notes-cli](https://github.com/rhysd/notes-cli)
 
 Installation
@@ -45,7 +46,7 @@ Please note that all examples in this README.md assume that you have installed n
 Configuration
 ===============================================================================
 
-The cli searches for not-hidden markdown files ending with `.md` in the notebooks home directory which must be set in environment variable: `NOTABLE_CLI_HOME`.
+The cli searches for not-hidden markdown files ending with `.md` in the notebooks home directory which must be set in the environment variable: `NOTABLE_CLI_HOME`.
 
 You can set this by exporting it or setting it in your `.bash_profile`:
 
@@ -79,7 +80,7 @@ Searching by a specific date just needs to enter the date in `YYYYMMDD` format:
 
 If you enter multiple words all parts of the query must match. The following query will only return notes if all words are somewhere inside the note’s content, title or filename:
 
-    notable-cli list "project customername standup"
+    notable-cli list "project customer standup"
 
 ### Sorting
 
@@ -89,7 +90,7 @@ The list can be sorted using the `--sort` parameter. So you can open your last c
 
 ### Open
 
-Notes can be opened piping the output of `notable-cli list` to your favorite editor or by using the `--editor` option which opens the editor.
+Notes can be opened by piping the output of `notable-cli list` to your favorite editor or by using the `--editor` option which opens the editor.
 
     notable-cli list | xargs $EDITOR
 
@@ -104,7 +105,7 @@ Create PDF from a note using [md-to-pdf](https://www.npmjs.com/package/md-to-pdf
 
 Text-Based User Interface ([TUI](https://en.wikipedia.org/wiki/Text-based_user_interface))
 -------------------------------------------------------------------------------
-The interactive text-mode interface a [neo-blessed](https://github.com/embark-framework/neo-blessed) powered interactive cli inerface that allows you to list all the notes, tags and creation/modified date while entering a search query on top and preview the notes as soon as there’s one selected in the list:
+The interactive text-mode interface is a [neo-blessed](https://github.com/embark-framework/neo-blessed) powered interactive CLI interface that allows you to list all the notes, tags and creation/modified dates while entering a search query on top and previewing the notes as soon as there’s one selected in the list:
 
     notable-cli --interactive
 
@@ -149,12 +150,12 @@ There are 3 panes, search input, list of notes and a note-preview which shows th
 
 ### Key-Bindings
 
-- <kbd>tab</kbd> or <kbd>shift</kbd><kbd>tab</kbd> - focus on next or previous pane
-- <kbd>r</kbd> - reload data from directory
+- <kbd>tab</kbd> or <kbd>shift</kbd><kbd>tab</kbd> - focus on the next or previous pane
+- <kbd>r</kbd> - reload data from a directory
 - <kbd>f</kbd> - focus on text input search for fast searching notes
 - <kbd>o</kbd> - open the currently selected note in the editor
 - <kbd>q</kbd>, <kbd>esc</kbd>, <kbd>ctrl</kbd><kbd>c</kbd> - quit the application
-- <kbd>s</kbd> or <kbd>S</kbd> - switch to next or previous sorting direction
+- <kbd>s</kbd> or <kbd>S</kbd> - switch to the next or previous sorting direction
 - <kbd>C-e</kbd> or <kbd>C-y</kbd> - scroll top, scroll bottom
 
 ## Full output
@@ -177,11 +178,11 @@ List all tags
 
 New Notes
 -------------------------------------------------------------------------------
-Creating new notes accepts the title of the note as first argument and tags as CSV list as the second argument. It will create a file using the title which renderes a template that contain a list of template variables.
+Creating new notes accepts the title of the note as the first argument and tags as CSV list as the second argument. It will create a file using the title which renders a template that contains a list of template variables.
 
     notable-cli new YYYYMMDD-Standup Project/MyProject,Standup,Note
 
-This will create and emmidiently open new note with the current date + "-Standup" as title using the Tags "Project/MyProject", "Standup" and "Note".
+This will create and emmidiently open a new note with the current date + "-Standup" as the title using the Tags "Project/MyProject", "Standup" and "Note".
 
 ## New Notes in Sub-Directories
 
@@ -189,11 +190,11 @@ When the title of the note contains slashes it will be saved in a sub-directory 
 
     notable-cli new Project/Open-Source/YYYYMMDD-Note 
 
-Will create a new file in the "Project/Open-Source/" directory. If that directory doesn’t exist it will get created. Also each directory is added as tag of the newly created file so you don’t have to add them as tags.
+Will create a new file in the "Project/Open-Source/" directory. If that directory doesn’t exist it will get created. Also, each directory is added as the tag of the newly created file so you don’t have to add them as tags.
 
 ## Templates
 
-You can pipe in a file’s content or the template string directly to `notable-cli new` to get it used as template. The content will be handled as [handlebars](https://handlebarsjs.com/) template.
+You can pipe in a file’s content or the template string directly to `notable-cli new` to get it used as a template. The content will be handled as [handlebars](https://handlebarsjs.com/) template.
 
 Using a template:
 
