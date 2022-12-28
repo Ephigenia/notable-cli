@@ -9,6 +9,9 @@ import * as filter from './../data/filter.js';
 import * as dSort from './../data/sort.js';
 import { render as dRender } from './../data/render.js';
 
+console.log(data.sort);
+process.exit();
+
 export default function(notesHomePath, query, sort, queryTag, includeHidden) {
   // view elements
   // -------------
