@@ -217,6 +217,18 @@ export default function(notesHomePath, query, sort, queryTag, includeHidden) {
     if (note) open([note.filename]);
   }
 
+  function scrollTo(pos) {
+    const previousPos = listBox.selected;
+    if (pos < 0) pos = 0;
+    // if (pos > listBox.length) pos = listBox.length,
+    listBox.select(pos);
+    if (previousPos < pos) {
+      listBox.setScroll(pos + 10);
+    } else {
+      listBox.setScroll(pos - 10);
+    }
+  }
+
   // keyboard control
   // ----------------
   screen.key('o', () => {
@@ -230,6 +242,14 @@ export default function(notesHomePath, query, sort, queryTag, includeHidden) {
   screen.key(['S-s'], () => {
     // next sort order
     setSortOrder(dSort.options.indexOf(sort) - 1);
+  });
+  screen.key(['C-f'], () => {
+    // page down
+    scrollTo(listBox.selected + 10);
+  });
+  screen.key(['C-g'], () => {
+    // page up
+    scrollTo(listBox.selected - 10);
   });
   screen.key(['C-e'], () => {
     // scroll down

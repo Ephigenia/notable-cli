@@ -157,6 +157,7 @@ There are 3 panes, search input, list of notes and a note-preview which shows th
 - <kbd>q</kbd>, <kbd>esc</kbd>, <kbd>ctrl</kbd><kbd>c</kbd> - quit the application
 - <kbd>s</kbd> or <kbd>S</kbd> - switch to the next or previous sorting direction
 - <kbd>C-e</kbd> or <kbd>C-y</kbd> - scroll top, scroll bottom
+- <kbd>C+f</kbd> or <kbd>C-g</kbd> - scroll page down or up
 
 ## Full output
 

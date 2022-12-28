@@ -10,7 +10,7 @@
  */
 export function splitSearchQuery(query) {
   // split query by words, but keep quoted parts and paths intact
-  let queryParts = String(query).match(/[\w/]+|"[^"]*"/g) || [];
+  let queryParts = String(query).match(/[\w:/]+|"[^"]*"/g) || [];
   queryParts = queryParts
     // remove leading and trailing quotes if there are any
     .map(query => query.replace(/^"|"$/g, ''))
